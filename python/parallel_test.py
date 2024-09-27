@@ -1,5 +1,19 @@
 import subprocess
 import os
+import time
+import threading
+import psutil
+
+
+
+def memchecker(pids):
+    time.sleep(10)
+    for p in pids:
+        a = psutil.Process(p.pid)
+        for i in a.children():
+            print ("PID:" + str(i.pid))
+            print("Memory amount: " + str((i.memory_info().rss/(1024*1024))) + "MB")
+            test_log.write("Memory Info: (" + p.args + "|" + str((i.memory_info().rss/(1024*1024))) + "MB )")  
 
 printout = 1
 warmup_instructions = 2000000
@@ -35,10 +49,20 @@ if printout == True:
 
 # from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 
+count = -1
 n = len(instruction_list) #Number of processess to be created
 for j in range(max(int(len(instruction_list)/n), 1)):
     with open(output_file_name,'w') as test_log:
         procs = [subprocess.Popen(i, shell=True, stdout=test_log) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))] ]
+        thread = threading.Thread(target = memchecker, args = [procs])
+        print("Starting Memchecker")
+        thread.start()
         for p in procs:
-            print("finished:" + p.args)
+            if (count != -1):
+                print(procs[count].args + "Has finished Computing")
             p.wait()
+            count += 1
+        thread.join()
+        print("exiting memchecker, Program is finished")
+
+
