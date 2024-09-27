@@ -14,65 +14,72 @@ params =("Test",
         "Branch Conditional",
         "Branch Direct Call",
         "Branch Indirect Call",
-        "Branch_Return")
+        "Branch_Return",
+        "Test_Length")
 data = pd.DataFrame(columns=params)
 
-output = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+output = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
 # parses the relavant part of the output for branch prediction 
 def Subparse(string,test_it):
     # ChampSim/tracer/600.perlbench_s-210B.champsimtrace.xz
+
 
     start = string.find("tracer/") + len("tracer/")
     stop = string.find(".champsimtrace.xz")
     output[0] = string[start:stop]
 
     start = string.find("CPU 0 cumulative IPC: ") + len("CPU 0 cumulative IPC:")
-    stop = string.find(" instructions: ")
+    stop = string.find(" instructions: ",start)
     output[1] = float(string[start:stop])
 
     start = stop + len(" instructions: ")
-    stop = string.find("cycles:")
+    stop = string.find("cycles:",start)
     output[2] = float(string[start:stop])
 
     start = stop + len("cycles:")
-    stop = string.find("CPU 0 Branch Prediction Accuracy:")
+    stop = string.find("CPU 0 Branch Prediction Accuracy:",start)
     output[3] = float(string[start:stop])
 
     start = stop + len("CPU 0 Branch Prediction Accuracy:")
-    stop = string.find("% MPKI: ")
+    stop = string.find("% MPKI: ",start)
     output[4] = float(string[start:stop])
 
     start = stop + len("% MPKI: ")
-    stop = string.find(" Average ROB Occupancy at Mispredict: ")
+    stop = string.find(" Average ROB Occupancy at Mispredict: ",start)
     output[5] = float(string[start:stop])
 
     start = stop + len(" Average ROB Occupancy at Mispredict: ")
-    stop = string.find("Branch type MPKI")
+    stop = string.find("Branch type MPKI",start)
     output[6] = float(string[start:stop])
 
     start = string.find("BRANCH_DIRECT_JUMP:") + len("BRANCH_DIRECT_JUMP:")
-    stop = string.find("BRANCH_INDIRECT:")
+    stop = string.find("BRANCH_INDIRECT:",start)
     output[7] = float(string[start:stop])
 
     start = stop + len("BRANCH_INDIRECT:")
-    stop = string.find("BRANCH_CONDITIONAL:")
+    stop = string.find("BRANCH_CONDITIONAL:",start)
     output[8] = float(string[start:stop])
 
     start = stop + len("BRANCH_CONDITIONAL:")
-    stop = string.find("BRANCH_DIRECT_CALL:")
+    stop = string.find("BRANCH_DIRECT_CALL:",start)
     output[9] = float(string[start:stop])
 
     start = stop + len("BRANCH_DIRECT_CALL:")
-    stop = string.find("BRANCH_INDIRECT_CALL:")
+    stop = string.find("BRANCH_INDIRECT_CALL:",start)
     output[10] = float(string[start:stop])
 
     start = stop + len("BRANCH_INDIRECT_CALL:")
-    stop = string.find("BRANCH_RETURN:")
+    stop = string.find("BRANCH_RETURN:",start)
     output[11] = float(string[start:stop])
 
     start = stop + len("BRANCH_RETURN:")
     output[12] = float(string[start:len(string)])
+
+    start = string.find("(Simulation time: ") + len("(Simulation time: ")
+    stop = string.find(")",start)
+    output[13] = string[start:stop]
+
 
     append_data = pd.DataFrame(list([output]),columns=params)
     # print(append_data)
@@ -89,7 +96,7 @@ test_end = 0
 test_it = 0
 while (test_end != -1):
     test_it =+ 1
-    test_start = log_text.find("=== Simulation ===",test_end)
+    test_start = log_text.find("Simulation complete",test_end)
     test_end = log_text.find("LLC TOTAL",test_start)
     if (test_start == -1 or test_end == -1):
         break
