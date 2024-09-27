@@ -15,13 +15,14 @@ params =("Test",
         "Branch Direct Call",
         "Branch Indirect Call",
         "Branch_Return",
-        "Test_Length")
+        "Test Length",
+        "Memory Usage")
 data = pd.DataFrame(columns=params)
 
-output = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+output = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
 # parses the relavant part of the output for branch prediction 
-def Subparse(string,test_it):
+def Subparse(string,log_text):
     # ChampSim/tracer/600.perlbench_s-210B.champsimtrace.xz
 
 
@@ -80,11 +81,14 @@ def Subparse(string,test_it):
     stop = string.find(")",start)
     output[13] = string[start:stop]
 
+    start = log_text.find(output[0])
+    start = log_text.find(output[0],start + len(output[0]))  + len(".champsimtrace.xz|") + len(output[0])
+    stop = log_text.find(")",start)
+    output[14] = log_text[start:stop]
 
     append_data = pd.DataFrame(list([output]),columns=params)
     # print(append_data)
     return append_data
-
 
 # find the relavent text blocks in the champsim_log output 
 # parse the individual components of the text block into a dataframe
@@ -102,7 +106,7 @@ while (test_end != -1):
         break
     else:
         temp_string = log_text[test_start:test_end]
-        append_data = Subparse(temp_string,test_it)
+        append_data = Subparse(temp_string,log_text)
         data = pd.concat([data,append_data])
 print(data)
 
