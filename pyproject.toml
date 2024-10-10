@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "branchprediciton"
+version = "0.1.0"
+description = ""
+authors = ["Nicholas T Dimidik <nicholas.dimidik@sjsu.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+matplotlib = "^3.9.2"
+pandas = "^2.2.3"
+numpy = "^2.1.2"
+psutil = "^6.0.0"
+
+[tool.poetry.group.dev.dependencies]
+numpy = "^2.1.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
