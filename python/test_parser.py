@@ -121,7 +121,8 @@ def create_csv(log):
 
 
 
-def display_graph():
+    # input: list of names of the predictors you want graphed 
+def display_graph(input):
     # This is the section of the program that graphs the data 
     import matplotlib.pyplot as plt
     import os
@@ -131,8 +132,10 @@ def display_graph():
     file_list = os.listdir(python_path + "Trace_tests")
     csvlist = []
     for i in file_list:
-        if (i.find('.csv') != -1): # filter out only tracer files 
-            csvlist.append(i)
+        for j in input:
+            if (i.find(j) != -1):
+                if (i.find('.csv') != -1): # filter out only tracer files 
+                    csvlist.append(i)
 
     # initialization data for the plot 
     fig,ax = plt.subplots(figsize =(16, 9))
