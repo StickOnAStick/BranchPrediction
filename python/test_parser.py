@@ -136,6 +136,7 @@ def display_graph(input):
             if (i.find(j) != -1):
                 if (i.find('.csv') != -1): # filter out only tracer files 
                     csvlist.append(i)
+                    
 
     # initialization data for the plot 
     fig,ax = plt.subplots(figsize =(16, 9))

@@ -7,10 +7,10 @@ Number of CPUs: 1
 Page size: 4096
 
 Off-chip DRAM Size: 4 GiB Channels: 1 Width: 64-bit Data Race: 3200 MT/s
-Warmup finished CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Warmup complete CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Simulation finished CPU 0 instructions: 500003 cycles: 168527 cumulative IPC: 2.967 (Simulation time: 00 hr 00 min 09 sec)
-Simulation complete CPU 0 instructions: 500003 cycles: 168527 cumulative IPC: 2.967 (Simulation time: 00 hr 00 min 09 sec)
+Warmup finished CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 01 sec)
+Warmup complete CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 01 sec)
+Simulation finished CPU 0 instructions: 500003 cycles: 168527 cumulative IPC: 2.967 (Simulation time: 00 hr 00 min 04 sec)
+Simulation complete CPU 0 instructions: 500003 cycles: 168527 cumulative IPC: 2.967 (Simulation time: 00 hr 00 min 04 sec)
 
 ChampSim completed all CPUs
 
@@ -102,10 +102,10 @@ Number of CPUs: 1
 Page size: 4096
 
 Off-chip DRAM Size: 4 GiB Channels: 1 Width: 64-bit Data Race: 3200 MT/s
-Warmup finished CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Warmup complete CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Simulation finished CPU 0 instructions: 500002 cycles: 286064 cumulative IPC: 1.748 (Simulation time: 00 hr 00 min 10 sec)
-Simulation complete CPU 0 instructions: 500002 cycles: 286064 cumulative IPC: 1.748 (Simulation time: 00 hr 00 min 10 sec)
+Warmup finished CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 00 sec)
+Warmup complete CPU 0 instructions: 200001 cycles: 50049 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 00 sec)
+Simulation finished CPU 0 instructions: 500002 cycles: 286064 cumulative IPC: 1.748 (Simulation time: 00 hr 00 min 04 sec)
+Simulation complete CPU 0 instructions: 500002 cycles: 286064 cumulative IPC: 1.748 (Simulation time: 00 hr 00 min 04 sec)
 
 ChampSim completed all CPUs
 
@@ -197,10 +197,10 @@ Number of CPUs: 1
 Page size: 4096
 
 Off-chip DRAM Size: 4 GiB Channels: 1 Width: 64-bit Data Race: 3200 MT/s
-Warmup finished CPU 0 instructions: 200000 cycles: 50054 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Warmup complete CPU 0 instructions: 200000 cycles: 50054 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 02 sec)
-Simulation finished CPU 0 instructions: 500000 cycles: 498722 cumulative IPC: 1.003 (Simulation time: 00 hr 00 min 11 sec)
-Simulation complete CPU 0 instructions: 500000 cycles: 498722 cumulative IPC: 1.003 (Simulation time: 00 hr 00 min 11 sec)
+Warmup finished CPU 0 instructions: 200000 cycles: 50054 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 01 sec)
+Warmup complete CPU 0 instructions: 200000 cycles: 50054 cumulative IPC: 3.996 (Simulation time: 00 hr 00 min 01 sec)
+Simulation finished CPU 0 instructions: 500000 cycles: 498722 cumulative IPC: 1.003 (Simulation time: 00 hr 00 min 05 sec)
+Simulation complete CPU 0 instructions: 500000 cycles: 498722 cumulative IPC: 1.003 (Simulation time: 00 hr 00 min 05 sec)
 
 ChampSim completed all CPUs
 
