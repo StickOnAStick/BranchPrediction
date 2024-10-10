@@ -42,6 +42,7 @@ args = len(sys.argv)
 
 count = 0
 recompile = False
+print("use --help to see avaliable commands")
 for i in sys.argv:
     count += 1
     if i == "--warmup-instructions":
@@ -81,7 +82,8 @@ for i in sys.argv:
                "--warmup-instructions : Number of warmup instructions to run \n" +
                "--simulation_instructions : Number of total instructions to run \n" +
                "--all: compiles and runs all avaliable predictors\n" + 
-               "--predictors: list the predictors you want to run in the format --predictors predictor1 predictor2 ... \n" + 
+               "--predictors: list the predictors you want to run in the format --predictors predictor1 predictor2 ... \n" +
+               "--predictors all: Runs all avaliable predictors\n" +
                "--recompile: Recompiles the instances of champsim, enable this if you have changed any of the predictor files. this in the format --recompile predictor1 predictor2 \n" +
                "--recompile all: Recompiles all avaliable predictors, use this command the first time you run the program")
 
@@ -148,5 +150,4 @@ for i in run_predictors:
 
 
 if (len(run_predictors) > 0):
-    print("yeet")
-    display_graph()
+    display_graph(run_predictors)
