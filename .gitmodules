@@ -1,3 +1,4 @@
-[submodule "ChampSim/test_branch"]
-	path = ChampSim/test_branch
+[submodule "ChampSim"]
+	path = ChampSim
 	url = https://github.com/Johngibbard/ChampSim.git
+	branch = test_branch
