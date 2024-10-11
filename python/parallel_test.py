@@ -31,9 +31,6 @@ def main():
     trace_list: list[str] = get_trace_tests()
     instruction_list: list[str] = get_instruction_list(traces=trace_list, champsim_path=executable, tracer_path=tracer_path)
 
-    if len(instruction_list) == 0:
-        logger.exception("No instructions generated!")
-
     run_instructions(instructions=instruction_list, out_file=out_file)
 
     # Load Result data
