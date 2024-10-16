@@ -21,9 +21,6 @@ output_file_name = 'Champsim_log.txt' # Output file name
 
 
 
-# from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
-
-
 def main():
     executable, tracer_path = ensure_paths()
     out_file = main_screen()
@@ -103,6 +100,8 @@ def get_instruction_list(traces: list[str], champsim_path: str, tracer_path: str
 
     return instruction_list
 
+
+# from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 def run_instructions(instructions: list[str], out_file: str):
     with open(output_file_name,'w') as test_log:
         # Launch subprocesses
