@@ -139,16 +139,17 @@ def config_setup(args: Namespace) -> None:
     
 
 def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
+    global CHAMPSIM_EXE_PATH, TRACER_PATH
     for predictor in predictors:
         
         instruction_list = []
 
         # Create the list of instructions through concatenation
         for trace in tracelist:
-            instruction = (path + "_" + predictor +
+            instruction = (str(CHAMPSIM_EXE_PATH) + "_" + predictor +
                     " --warmup-instructions " + str(warmup_instructions) +
                     " --simulation-instructions "  + str(simulated_instructions) + 
-                    " " + tracer + "/" + trace)
+                    " " + str(TRACER_PATH) + "/" + trace)
         instruction_list.append(instruction)
         thread = threading.Thread(target = create_test , args = [instruction_list,predictor])
         logger.info(f"Starting thread {thread} for predictor: {predictor}" )
@@ -166,14 +167,14 @@ def create_test(instruction_list, predictor) -> None:
     n = len(instruction_list) #Number of processess to be created
     for j in range(max(int(len(instruction_list)/n), 1)):
         with open(log_name,'w') as test_log:
-            print("writing to:" + log_name)
+            logger.debug("writing to:" + log_name)
             procs = [subprocess.Popen(i, shell=True, stdout=test_log) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))] ]
             #thread = threading.Thread(target = memchecker, args = [procs,log_name])
             #print("Starting Memchecker")
             #thread.start()
             for p in procs:
                 if (count != -1):
-                    print(procs[count].args + "Has finished Computing")
+                    logger.success(procs[count].args + "Has finished Computing")
                 p.wait()
                 count += 1
             print(procs[count].args + "Has finished Computing")
