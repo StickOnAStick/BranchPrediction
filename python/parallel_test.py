@@ -34,16 +34,6 @@ assert CHAMPSIM_EXE_PATH.is_file()
 assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
-def memchecker(pids,log):
-    time.sleep(10)
-    for p in pids:
-        a = psutil.Process(p.pid)
-        for i in a.children():
-            print ("PID:" + str(i.pid))
-            print("Memory amount: " + str((i.memory_info().rss/(1024*1024))) + "MB")
-            with open(log,'w') as data_log:
-                data_log.write("Memory Info: (" + p.args + "|" + str((i.memory_info().rss/(1024*1024))) + "MB )")  
-
 printout = 1
 warmup_instructions = 200000
 simulated_instructions = 500000
@@ -204,6 +194,16 @@ def create_test(instruction_list, predictor):
             # thread.join()
             create_csv(log_name)
             # print("exiting memchecker, " + i +"has finished ")
+
+def memchecker(pids,log):
+    time.sleep(10)
+    for p in pids:
+        a = psutil.Process(p.pid)
+        for i in a.children():
+            print ("PID:" + str(i.pid))
+            print("Memory amount: " + str((i.memory_info().rss/(1024*1024))) + "MB")
+            with open(log,'w') as data_log:
+                data_log.write("Memory Info: (" + p.args + "|" + str((i.memory_info().rss/(1024*1024))) + "MB )")  
 
 
 if __name__ == "__main__":
