@@ -46,6 +46,7 @@ predictor = 'branch'      # path for predictors
 run_predictors = []
 recompile_list = []
 predictor_list: list[str] = os.listdir(PREDICTOR_PATH)
+logger.debug(f"Predictor list: {predictor_list}")
 # print(predictor_list)
 # Take command line arguments 
 args = len(sys.argv)
@@ -54,10 +55,9 @@ recompile = False
 print("\n\n------------ChampSim Parallel Test Launcher----------")
 
 def main():
-
+    # Parse and deal with input argv's
     args: Namespace = parse_args()
-
-    recompile = config_setup(args=args, recompile=recompile)
+    config_setup(args=args)
 
     if recompile:
         logger.info(f"Recompiling the following predictors: {recompile_list}")
@@ -85,13 +85,12 @@ def parse_args():
     parser.add_argument('--all', action='store_true', help='Compile and run all available predictors')
     parser.add_argument('--predictors', nargs='+', help='List of predictors to run')
     parser.add_argument('--recompile', nargs='+', help='List of predictors to recompile')
-    parser.add_argument('--help', help="View list of instructions") # Kinda pointless now? Provides better formatting
 
     return parser.parse_args()
 
-def config_setup(args: Namespace, recomp: bool = False) -> bool:
+def config_setup(args: Namespace) -> None:
     """Function to config your champsim run"""
-    global warmup_instructions, simulated_instructions
+    global warmup_instructions, simulated_instructions, recompile, run_predictors
 
     args = parse_args()
         
@@ -131,26 +130,15 @@ def config_setup(args: Namespace, recomp: bool = False) -> bool:
                     logger.error(f"Recompile {predictor} not found in recompile list!")
                     SystemError(f"Predictor not found for recompilation {predictor}")
 
-        recomp = True
-
-    if args.help:
-        print ("Avaliable instructions \n" +
-                "--warmup-instructions : Number of warmup instructions to run \n" +
-                "--simulation_instructions : Number of total instructions to run \n" +
-                "--all: compiles and runs all avaliable predictors\n" + 
-                "--predictors: list the predictors you want to run in the format --predictors predictor1 predictor2 ... \n" +
-                "--predictors all: Runs all avaliable predictors\n" +
-                "--recompile: Recompiles the instances of champsim, enable this if you have changed any of the predictor files. this in the format --recompile predictor1 predictor2 \n" +
-                "--recompile all: Recompiles all avaliable predictors, use this command the first time you run the program")
+        recompile = True
 
     if args.all: # Leave this last to prevent overwrites
-        recomp = True
+        recompile = True
         run_predictors = predictor_list
         recompile_list = predictor_list
     
-    return recomp
 
-def run_instructions(tracelist: list[str], predictors: list[str]):
+def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
     for predictor in predictors:
         
         instruction_list = []
@@ -172,7 +160,7 @@ def run_instructions(tracelist: list[str], predictors: list[str]):
 # from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 
 # Create a thread for each list of tests, the argument is a list of instructions 
-def create_test(instruction_list, predictor):
+def create_test(instruction_list, predictor) -> None:
     log_name = log_path + predictor + "_log.txt"
     count = -1
     n = len(instruction_list) #Number of processess to be created
@@ -196,6 +184,7 @@ def create_test(instruction_list, predictor):
             # print("exiting memchecker, " + i +"has finished ")
 
 def memchecker(pids,log):
+    """ DEPRECATED """
     time.sleep(10)
     for p in pids:
         a = psutil.Process(p.pid)
