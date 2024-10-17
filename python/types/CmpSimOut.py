@@ -18,4 +18,4 @@ class ChampSimOut(BaseModel):
     branch_conditional: float
     branch_indirect_call: float
     branch_return: float
-    test_len: 
+    test_len: datetime
