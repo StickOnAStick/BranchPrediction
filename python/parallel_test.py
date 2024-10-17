@@ -74,6 +74,16 @@ def main():
         compile_all(recompile_list)
     logger.info(f"Running the following predictors: {run_predictors}")
 
+    
+    # Filter all tracer files in the tracer folder, then copy the names into tracelist 
+    tracelist = [trace for trace in os.listdir(TRACER_PATH) if not trace.find('.xz') != -1]
+
+    run_instructions(tracelist=tracelist, predictors=run_predictors)
+
+    
+    
+    if (len(run_predictors) > 0):
+        display_graph(run_predictors)
 
 
 def parse_args():
@@ -150,8 +160,24 @@ def config_setup(args: Namespace, recomp: bool = False) -> bool:
     
     return recomp
 
-# Filter all tracer files in the tracer folder, then copy the names into tracelist 
-tracelist = [trace for trace in os.listdir(TRACER_PATH) if not trace.find('.xz') != -1]
+def run_instructions(tracelist: list[str], predictors: list[str]):
+    for predictor in predictors:
+        
+        instruction_list = []
+
+        # Create the list of instructions through concatenation
+        for trace in tracelist:
+            instruction = (path + "_" + predictor +
+                    " --warmup-instructions " + str(warmup_instructions) +
+                    " --simulation-instructions "  + str(simulated_instructions) + 
+                    " " + tracer + "/" + trace)
+        instruction_list.append(instruction)
+        thread = threading.Thread(target = create_test , args = [instruction_list,predictor])
+        logger.info(f"Starting thread {thread} for predictor: {predictor}" )
+        thread.start()
+
+    for _ in run_predictors:
+        thread.join()
 
 # from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 
@@ -178,29 +204,6 @@ def create_test(instruction_list, predictor):
             # thread.join()
             create_csv(log_name)
             # print("exiting memchecker, " + i +"has finished ")
-
-
-
-
-for i in run_predictors:
-    # Create the list of instructions through concatenation
-    instruction_list = []
-    for j in tracelist:
-        instruction = (path + "_" + i +
-                    " --warmup-instructions " + str(warmup_instructions) +
-                    " --simulation-instructions "  + str(simulated_instructions) + 
-                    " " + tracer + "/" + j)
-        instruction_list.append(instruction)
-    print(instruction_list)
-    thread = threading.Thread(target = create_test , args = [instruction_list,i])
-    print ("Creating thread" )
-    thread.start()
-for i in run_predictors:
-    thread.join()
-
-
-if (len(run_predictors) > 0):
-    display_graph(run_predictors)
 
 
 if __name__ == "__main__":
