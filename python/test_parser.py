@@ -52,7 +52,7 @@ def PARSE_JSON(log,test):
             output[i+7] = data[test]['sim']['cores'][0]['mispredict'][mispredict[i]]
         for i in mispredict:
             params.append(i)
-        print(output)
+        # print(output)
     return pd.DataFrame(list([output]),columns= params)
 
 
@@ -160,7 +160,7 @@ def create_csv(log):
     # print(data)
    
     data.to_csv(str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH))-2):(len(log) - len(".json"))] +".csv",mode='w+')
-    print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
+    # print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
 
 
 def display_size_graph(input,range):

@@ -21,9 +21,9 @@ assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
 global warmup_instructions  
-warmup_instructions = 200000
+warmup_instructions = 20000
 global simulated_instructions 
-simulated_instructions = 1000000
+simulated_instructions = 100000
 args = len(sys.argv)
 
 
@@ -63,15 +63,11 @@ def compile_missing(comp_list: list[str]) -> list[str]:
         #print(i)
         compile_champsim_instance(i,int_result-1) # compile the predictor i with our joined integer list 
 
-def create_test(instruction_list, predictor):
-    n = len(instruction_list) #Number of processess to be created
-    for j in range(max(len(instruction_list), 1)):
-       # print("instruction_list")
-        # print(instruction_list)
-        with open("jim", 'w') as jim:
-            procs = [subprocess.Popen(i, shell=True, stdout=jim) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))]]
-            for p in procs:
-                p.wait()
+def create_test(instruction_list):
+    with open(os.devnull, 'w') as ignore:
+        procs = [subprocess.Popen([i], shell=True, stdout=ignore) for i in instruction_list]
+        for p in procs:
+            p.wait()
 
 def merge_json(predictors):
     json_list = os.listdir(LOG_PATH)
@@ -81,23 +77,22 @@ def merge_json(predictors):
         for j in json_list:
             # print(j[:len(j)-5] + "|" + i)
             if (j[:len(j)-5] == i):
-                print("already exists \n \n ")
+                pass # print("already exists \n \n ")
             elif(j.startswith(i)):
                 merge_list.append(j)
-        print(merge_list)
+        # print(merge_list)
         data = []
         for j in range(0,len(merge_list)):
-            print(str(LOG_PATH)+ "/"+merge_list[j])
+            # print(str(LOG_PATH)+ "/"+merge_list[j])
             with open(str(LOG_PATH)+ "/" +merge_list[j],"r") as file2:
                     data2 = json.load(file2)
                     data.append(data2[0])
                     file2.close()
         with open(str(LOG_PATH)+ "/"+i+".json","w+") as file1:
             try: 
-                if len(json.load(file1)) > len(predictors):
-                    print("too big")
+                len(json.load(file1)) > len(predictors)
             except:
-                print(len(data))
+                pass # print(len(data))
             file1.seek(0)
             json.dump(data, file1, indent=4)
             file1.truncate()
@@ -204,8 +199,8 @@ def main():
             instruction_list.append(instruction)
         # print("Instruction list :")
         # print(instruction_list)
-        thread = threading.Thread(target = create_test , args = [instruction_list,i])
-        print ("Creating thread" )
+        thread = threading.Thread(target = create_test , args = [instruction_list])
+        print ("Creating thread for:" + i )
         thread.start()
     for i in run_predictors:
         thread.join()
