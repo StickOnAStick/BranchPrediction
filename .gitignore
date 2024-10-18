@@ -1,1 +1,4 @@
 **/python/Trace_tests/**.* 
+**/python/Test_logs/**.* 
+**/python/Trace_test(storage)/**.* 
+**/python/Test_configs/**.* 
