@@ -26,8 +26,8 @@ What I want for this file:
 MAIN_PATH           = pathlib.Path(__file__).parent.parent.resolve()
 LOG_PATH            = MAIN_PATH.joinpath("python/Test logs/champsim")
 CHAMPSIM_EXE_PATH   = MAIN_PATH.joinpath("ChampSim/bin/champsim")
-TRACER_PATH         = MAIN_PATH.joinpath("ChampSim/tracer")
-PREDICTOR_PATH      = MAIN_PATH.joinpath("ChampSim/branch")
+TRACER_PATH         = MAIN_PATH.joinpath("ChampSim/tracer") # Tracer tests 
+PREDICTOR_PATH      = MAIN_PATH.joinpath("ChampSim/branch") # Predictors
 
 assert LOG_PATH.is_dir()
 assert CHAMPSIM_EXE_PATH.is_file()
@@ -37,14 +37,9 @@ assert PREDICTOR_PATH.is_dir()
 printout = 1
 warmup_instructions = 200000
 simulated_instructions = 500000
-log_path = "python/Test logs/champsim_"
-path = 'bin/champsim'        # path for executable
-tracer = 'tracer'            # path for tracer tests
-predictor = 'branch'      # path for predictors 
 
-
-run_predictors = []
-recompile_list = []
+run_predictors: list[str] = []
+recompile_list: list[str] = []
 predictor_list: list[str] = os.listdir(PREDICTOR_PATH)
 logger.debug(f"Predictor list: {predictor_list}")
 # print(predictor_list)
@@ -55,6 +50,7 @@ recompile = False
 print("\n\n------------ChampSim Parallel Test Launcher----------")
 
 def main():
+    global recompile
     # Parse and deal with input argv's
     args: Namespace = parse_args()
     config_setup(args=args)
@@ -62,11 +58,9 @@ def main():
     if recompile:
         logger.info(f"Recompiling the following predictors: {recompile_list}")
         compile_all(recompile_list)
-    logger.info(f"Running the following predictors: {run_predictors}")
 
-    
-    # Filter all tracer files in the tracer folder, then copy the names into tracelist 
-    tracelist = [trace for trace in os.listdir(TRACER_PATH) if not trace.find('.xz') != -1]
+    logger.info(f"Running the following predictors: {run_predictors}")
+    tracelist: list[str] = [trace for trace in os.listdir(TRACER_PATH) if os.path.isdir(f"{TRACER_PATH}/{trace}")] # Select only top level directories.
     run_instructions(tracelist=tracelist, predictors=run_predictors)
 
     if (len(run_predictors) > 0):
@@ -82,6 +76,7 @@ def parse_args():
     parser.add_argument('--all', action='store_true', help='Compile and run all available predictors')
     parser.add_argument('--predictors', nargs='+', help='List of predictors to run')
     parser.add_argument('--recompile', nargs='+', help='List of predictors to recompile')
+    parser.add_argument('--log_level', type=int, help="Set the log level for your session. 0 == info only, 1 == debug")
 
     return parser.parse_args()
 
@@ -139,7 +134,7 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
     for predictor in predictors:
         
         instruction_list = []
-        
+        logger.debug(f"TRACE LIST: {tracelist}")
         # Create the list of instructions through concatenation
         for trace in tracelist:
             base_command = [
@@ -152,7 +147,8 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
             logger.debug(instruction)  
             instruction_list.append(instruction)
 
-        thread = threading.Thread(target = create_test , args = [instruction_list,predictor])
+        # Create a new thread for a single predictor with multiple instructions.
+        thread = threading.Thread(target = create_test , args = [instruction_list,predictor]) 
         logger.info(f"Starting thread {thread} for predictor: {predictor}" )
         thread.start()
 
@@ -162,10 +158,15 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
 # from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 
 # Create a thread for each list of tests, the argument is a list of instructions 
-def create_test(instruction_list, predictor: str) -> None:
-    log_name = str(LOG_PATH).join(predictor.join("_log.txt")) # I know this looks gross, but it's O(n) vs O(n^2)
+def create_test(instruction_list: list[str], predictor: str) -> None:
+    logger.debug(f"PREDICTOR: {predictor}")
+    log_name = str(LOG_PATH.joinpath(predictor.join("_log.txt"))) # I know this looks gross, but it's O(n) vs O(n^2)
     count = -1
+    logger.debug(f"LOG NAME: {log_name}\tINSTRUCTION LIST: {instruction_list}")
+
     n = len(instruction_list) #Number of processess to be created
+
+
     for j in range(n):
         with open(log_name,'w') as test_log:
             logger.debug("writing to:" + log_name)
