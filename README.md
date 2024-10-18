@@ -1,14 +1,11 @@
 # Repository for SJSU CMPE 195 __Branch Prediction__ Capstone project.
 
-Description of the project goes here
+CLI framework to test various branch predictors.
 
 ## Contributors
 Nick
 Ayman
 John
-
-## Extras
-
 
 # Running and installation
 
