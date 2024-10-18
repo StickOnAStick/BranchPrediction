@@ -24,7 +24,7 @@ What I want for this file:
 """
 
 MAIN_PATH           = pathlib.Path(__file__).parent.parent.resolve()
-LOG_PATH            = MAIN_PATH.joinpath("python/logs")
+LOG_PATH            = MAIN_PATH.joinpath("python/Test logs/champsim")
 CHAMPSIM_EXE_PATH   = MAIN_PATH.joinpath("ChampSim/bin/champsim")
 TRACER_PATH         = MAIN_PATH.joinpath("ChampSim/tracer")
 PREDICTOR_PATH      = MAIN_PATH.joinpath("ChampSim/branch")
@@ -67,11 +67,8 @@ def main():
     
     # Filter all tracer files in the tracer folder, then copy the names into tracelist 
     tracelist = [trace for trace in os.listdir(TRACER_PATH) if not trace.find('.xz') != -1]
-
     run_instructions(tracelist=tracelist, predictors=run_predictors)
 
-    
-    
     if (len(run_predictors) > 0):
         display_graph(run_predictors)
 
@@ -137,20 +134,24 @@ def config_setup(args: Namespace) -> None:
         run_predictors = predictor_list
         recompile_list = predictor_list
     
-
 def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
     global CHAMPSIM_EXE_PATH, TRACER_PATH
     for predictor in predictors:
         
         instruction_list = []
-
+        
         # Create the list of instructions through concatenation
         for trace in tracelist:
-            instruction = (str(CHAMPSIM_EXE_PATH) + "_" + predictor +
-                    " --warmup-instructions " + str(warmup_instructions) +
-                    " --simulation-instructions "  + str(simulated_instructions) + 
-                    " " + str(TRACER_PATH) + "/" + trace)
-        instruction_list.append(instruction)
+            base_command = [
+                f"{str(CHAMPSIM_EXE_PATH)}_{predictor}",
+                f"--warmup-instructions {str(warmup_instructions)}",
+                f"--simulation-instructions {str(simulated_instructions)}", 
+                f"{str(TRACER_PATH)}/{trace}"
+            ]
+            instruction = " ".join(base_command)      
+            logger.debug(instruction)  
+            instruction_list.append(instruction)
+
         thread = threading.Thread(target = create_test , args = [instruction_list,predictor])
         logger.info(f"Starting thread {thread} for predictor: {predictor}" )
         thread.start()
@@ -161,11 +162,11 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
 # from https://stackoverflow.com/questions/30686295/how-do-i-run-multiple-subprocesses-in-parallel-and-wait-for-them-to-finish-in-py
 
 # Create a thread for each list of tests, the argument is a list of instructions 
-def create_test(instruction_list, predictor) -> None:
-    log_name = log_path + predictor + "_log.txt"
+def create_test(instruction_list, predictor: str) -> None:
+    log_name = str(LOG_PATH).join(predictor.join("_log.txt")) # I know this looks gross, but it's O(n) vs O(n^2)
     count = -1
     n = len(instruction_list) #Number of processess to be created
-    for j in range(max(int(len(instruction_list)/n), 1)):
+    for j in range(n):
         with open(log_name,'w') as test_log:
             logger.debug("writing to:" + log_name)
             procs = [subprocess.Popen(i, shell=True, stdout=test_log) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))] ]

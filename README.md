@@ -41,7 +41,7 @@ Now we can make the main _ChampSim_ project. To do so, use `make clean` _to ensu
 
 
 ### Notes:
-If you get `Error 1` after running `make`
+If you get `Error 1` after running `make` #### FILL ME IN #####
 
 
 
