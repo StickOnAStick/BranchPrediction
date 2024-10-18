@@ -1,14 +1,11 @@
 # Repository for SJSU CMPE 195 __Branch Prediction__ Capstone project.
 
-Description of the project goes here
+CLI framework to test various branch predictors.
 
 ## Contributors
 Nick
 Ayman
 John
-
-## Extras
-
 
 # Running and installation
 
@@ -44,7 +41,7 @@ Now we can make the main _ChampSim_ project. To do so, use `make clean` _to ensu
 
 
 ### Notes:
-If you get `Error 1` after running `make`
+If you get `Error 1` after running `make` #### FILL ME IN #####
 
 
 
