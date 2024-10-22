@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import os
 import json
 import pathlib
+from scipy.interpolate import make_interp_spline, pchip
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 MAIN_PATH           = pathlib.Path(__file__).parent.parent.resolve()
@@ -163,7 +164,7 @@ def create_csv(log):
     # print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
 
 
-def display_size_graph(input,range):
+def display_size_graph(input,size):
     file_list = os.listdir(CSV_PATH)
     
     # get the types of predictors we will be running based on the names
@@ -191,16 +192,13 @@ def display_size_graph(input,range):
     # print(csvlist)
     count = 1
     x_axis = []
-    while (count <= range):
+    while (count <= size):
         x_axis.append(str(count))
         count = count*2
     
     for p in predictors:
         for c in csvlist:
             branch_csvs = pd.read_csv(str(CSV_PATH) +"/" + c)
-            #print(c)
-            #print(branch_csvs)
-            #print(p[0] + str(p[1]) + "k.csv" + "|" + c)
             if (p[0] + str(p[1]) + "k.csv" == c):
                 p[2] =  branch_csvs["Branch Prediction Accuracy"].mean()
 
@@ -209,10 +207,19 @@ def display_size_graph(input,range):
         for p in predictors:
             if (p[0] == pl):
                 temp_pred_list.append(p[2])
-        #print(temp_pred_list)
-        #rint(x_axis)
-        plt.plot(x_axis,temp_pred_list, label= pl)
+        x_axis = np.array(x_axis)
+        y_axis = np.array(temp_pred_list)
+        plt.plot(x_axis,y_axis, label= pl)
 
+        # creates a smooth graph but doesn't look very good
+
+        # x_axis = np.array(x_axis)
+        # y_axis = np.array(temp_pred_list)
+        # X_ = np.linspace(float(x_axis[0]), float(x_axis[len(x_axis)-1]), 50000)
+        # Y_ = pchip(x_axis,y_axis)
+        # plt.xscale('log', base=2)
+        # plt.plot(X_, Y_(X_), label= pl)
+    
     plt.legend()
     plt.ylabel("Prediction Accuracy")
     plt.xlabel("Predictor size (kbits)")

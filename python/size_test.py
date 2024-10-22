@@ -1,12 +1,15 @@
 from test_parser import create_csv, display_graph, display_size_graph
 from recompiler import compile_all, compile_champsim_instance, find_2_pow, delete_make
+from loguru import logger
+from argparse import Namespace
+
 import sys
 import os
 import subprocess
 import threading
-import time
 import json
 import pathlib
+import argparse
 
 
 MAIN_PATH           = pathlib.Path(__file__).parent.parent.resolve()
@@ -20,12 +23,151 @@ assert CHAMPSIM_EXE_PATH.is_dir()
 assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
-global warmup_instructions  
-warmup_instructions = 20000
-global simulated_instructions 
-simulated_instructions = 100000
-args = len(sys.argv)
+printout = 1
+size = 1
+warmup_instructions = 100000
+simulated_instructions = 500000
 
+run_predictors: list[str] = []
+recompile_list: list[str] = []
+predictor_list: list[str] = os.listdir(PREDICTOR_PATH)
+logger.debug(f"Predictor list: {predictor_list}")
+
+# print(predictor_list)
+# Take command line arguments (for debugging)
+args = len(sys.argv)
+recompile = False
+
+def main():
+    global recompile
+   
+    args: Namespace = parse_args()
+    config_setup(args=args)
+
+    if recompile:
+        print("Recompiling the following predictors:")
+        print(recompile_list)
+        compile_all(recompile_list,size) # use -1 if we don't want to change the size
+
+    missing = check_missing(run_predictors)
+    if len(missing) != 0:
+        compile_missing(missing)
+
+        # find all of the files in the tracer folder, then copy the names into tracelist 
+    file_list = os.listdir(TRACER_PATH)
+
+    tracelist = []
+    for i in file_list:
+        if (i.find('.xz') != -1): # filter out only tracer files 
+            tracelist.append(i)
+
+    logger.info(f"Running the following predictors: {run_predictors}")
+    run_instructions(tracelist=tracelist, predictors=run_predictors)
+    # for some reason the files do not finish writing, even after they join
+
+    merge_json(run_predictors)
+
+    for i in run_predictors:
+        create_csv(str(LOG_PATH) + "/" + i+".json")
+
+    if (len(run_predictors) > 0):
+        display_size_graph(run_predictors,size)
+
+        
+def parse_args():
+    parser = argparse.ArgumentParser(description="Claros CLI parser")
+
+     # Define arguments with their respective options
+    parser.add_argument('--warmup_instructions', type=int, help='Number of warmup instructions to run')
+    parser.add_argument('--simulation_instructions', type=int, help='Number of total instructions to run')
+    parser.add_argument('--predictors', nargs='+', help='List of predictors to run')
+    parser.add_argument('--recompile', nargs='+', help='List of predictors to recompile')
+    parser.add_argument('--log_level', type=int, help="Set the log level for your session. 0 == info only, 1 == debug")
+    parser.add_argument('--size', type=int, help='run test for predictors up to this size in Kilobits')
+
+    return parser.parse_args()
+
+def config_setup(args: Namespace) -> None:
+    global warmup_instructions, simulated_instructions, recompile, run_predictors, size
+
+    args = parse_args()
+
+    if args.size:
+        try:
+            int(args.size)
+            print(size)
+        except ValueError:
+            logger.error("Wrong type of value passed into --size")
+        size = int(args.size)
+        print(size)
+    
+    if args.warmup_instructions:
+        try:
+            int(args.warmup_instructions)
+        except ValueError:
+            logger.error("Wrong type of value passed into warmup_instructions!")
+        warmup_instructions = int(args.warmup_instructions)
+
+    if args.simulation_instructions:
+        try:
+            int(args.simulation_instructions)
+        except ValueError:
+            logger.error("Wrong type of value passed into --simulation_instructions")
+        simulated_instructions = int(args.simulation_instructions)
+
+    if args.predictors:
+        if "all" in args.predictors:
+            run_predictors = predictor_list
+        else:
+            for predictor in args.predictors:             
+                if predictor in predictor_list:
+                    power = 0
+                    while pow(2,power) <= size:
+                        run_predictors.append(predictor+str(pow(2,power))+"k")
+                        power += 1
+                else:
+                    logger.error(f"Predictor {predictor} not found in predictor list!")
+                    SystemError(f"Predictor not found {predictor}")
+
+    if args.recompile:
+        if "all" in args.recompile:
+            recompile_list = predictor_list
+        else:
+            for predictor in args.predictors:
+                if predictor in recompile_list:
+                    power = 0
+                    while pow(2,power) <= size:
+                        recompile_list.append(predictor+str(pow(2,power))+"k")
+                        power += 1
+                else:
+                    logger.error(f"Recompile {predictor} not found in recompile list!")
+                    SystemError(f"Predictor not found for recompilation {predictor}")
+        recompile = True  
+                     
+def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
+    global CHAMPSIM_EXE_PATH, TRACER_PATH
+    threads = []
+    for predictor in predictors:
+        instruction_list = []
+
+        for trace in tracelist:
+            instruction = (str(CHAMPSIM_EXE_PATH) + "/champsim_" + predictor,
+                        "--warmup-instructions", str(warmup_instructions),
+                        "--simulation-instructions"  , str(simulated_instructions),
+                        "--json", str(LOG_PATH) + "/"  + predictor + trace + ".json",
+                         str(TRACER_PATH) + "/" + trace )
+            instruction_list.append(instruction)   
+            logger.debug(instruction)  
+
+        # Create a new thread for a single predictor with multiple instructions.
+        t = threading.Thread(target = create_test , args = [instruction_list])
+        threads.append(t)
+        print ("Creating thread for:" + predictor )
+        t.start()
+    
+    for t in threads:
+        t.join()
+    #print("All threads are finished" )
 
 # check if all of the tests the user requested are compiled 
 def check_missing(comp_list):
@@ -48,6 +190,7 @@ def check_missing(comp_list):
 # compile the missing executables
 def compile_missing(comp_list: list[str]) -> list[str]: 
     # the following section is a cognito-hazard, I do not recommend looking at it if you wish to retain your sanity 
+    # there is a better version of this code in the test_parser
     for i in comp_list:
         tempsize = []
         for j in reversed(i): # traverse the name of the instance to compile from the back
@@ -64,157 +207,47 @@ def compile_missing(comp_list: list[str]) -> list[str]:
         compile_champsim_instance(i,int_result-1) # compile the predictor i with our joined integer list 
 
 def create_test(instruction_list):
-    with open(os.devnull, 'w') as ignore:
-        procs = [subprocess.Popen([i], shell=True, stdout=ignore) for i in instruction_list]
-        for p in procs:
-            p.wait()
+    for i in instruction_list:
+        thread = threading.Thread(target = run_command , args = [i])
+        thread.start()
 
+    for _ in instruction_list:
+        thread.join()
+            
+def run_command(cmd):
+    with open(os.devnull, 'w') as ignore:
+        p = subprocess.run(cmd, shell=False, stdout=ignore)
+
+# merge the different individual json tests files generated by champsim, and create one json file for each predcitor that contains all of the test information 
 def merge_json(predictors):
     json_list = os.listdir(LOG_PATH)
     for i in predictors:
-        # print(i)
+
+        # Find which json test files to merge into one predictor json file 
         merge_list = []
         for j in json_list:
             # print(j[:len(j)-5] + "|" + i)
-            if (j[:len(j)-5] == i):
+            if (j[:len(j)-5] == i): # check if the file names are the same - .json file tag
                 pass # print("already exists \n \n ")
-            elif(j.startswith(i)):
-                merge_list.append(j)
-        # print(merge_list)
+            elif(j.startswith(i)): # check if the item in json list starts with the predictor name 
+                merge_list.append(j) # add them to list of items to merge into one .json file
         data = []
-        for j in range(0,len(merge_list)):
-            # print(str(LOG_PATH)+ "/"+merge_list[j])
+        for j in range(0,len(merge_list)): 
+            # append the data from the from each item in merge list into one json data structure  
             with open(str(LOG_PATH)+ "/" +merge_list[j],"r") as file2:
-                    data2 = json.load(file2)
-                    data.append(data2[0])
-                    file2.close()
+                    data2 = json.load(file2) # load the test file we are merging from 
+                    data.append(data2[0]) # append that data to the data object
+                    file2.close() # close the test file 
+
+        # open the json file with the name of the predictor, we will write our new data structure to this file 
         with open(str(LOG_PATH)+ "/"+i+".json","w+") as file1:
             try: 
                 len(json.load(file1)) > len(predictors)
             except:
                 pass # print(len(data))
+            # save the json data to the new file and close 
             file1.seek(0)
             json.dump(data, file1, indent=4)
             file1.truncate()
             file1.close()
-
-# clean the 
-def clear():
-    a = 2
-
-def main():
-
-    print(os.getcwd())
-    # delete_make()
-    # subprocess.run(["make","configclean"], check=True)
-
-    
-    run_predictors = []
-    recompile_list = []
-    predictor_list = os.listdir(PREDICTOR_PATH)
-
-    print("use --help to see avaliable commands")
-
-    count = 0
-    size = 1
-    recompile = False
-    comp_check = False
-    for i in sys.argv:
-        count += 1
-        if i == "--compcheck":
-            comp_check = True
-        if i == "--size":
-            try:
-                size = int(sys.argv[count])
-            except:
-                print("size needs to be a valid integer")
-                exit()
-        if i == "--recompile":
-            for j in sys.argv[count:]:
-                if j == "all":
-                    recompile_list = predictor_list
-                temp = len(recompile_list)
-                for k in predictor_list:
-                
-                    if (j == k):
-                        recompile_list.append(k)
-                        break
-                if temp == len(recompile_list):
-                    break
-            recompile = True
-        if i == "--predictors":
-            for j in sys.argv[count:]:
-                power = 0
-                if j == "all":
-                    run_predictors = predictor_list
-                    break
-                temp = len(run_predictors)
-                for k in predictor_list:
-                    print(j + "|" + k)
-                    if (j == k):
-                        while pow(2,power) <= size:
-                            run_predictors.append(k+str(pow(2,power))+"k")
-                            power += 1
-                        break
-                if temp == len(run_predictors):
-                    break
-
-    
-
-    if recompile:
-        print("Recompiling the following predictors:")
-        print(recompile_list)
-        compile_all(recompile_list,size) # use -1 if we don't want to change the size
-
-
-    print("Predictors to run:")
-    print(run_predictors)
-    missing = check_missing(run_predictors)
-
-    if len(missing) != 0:
-        compile_missing(missing)
-
-    # # recompile errant executables(should be fast)
-    # if  comp_check:
-    #     compile_missing(run_predictors,1)
-    # print(run_predictors)
-
-    # find all of the files in the tracer folder, then copy the names into tracelist 
-    file_list = os.listdir(TRACER_PATH)
-    tracelist = []
-    for i in file_list:
-        if (i.find('.xz') != -1): # filter out only tracer files 
-            tracelist.append(i)
-
-    #print("Predictors to run:")
-    #print(run_predictors)
-    for i in run_predictors:
-        # Create the list of instructions through concatenation
-        instruction_list = []
-        for j in tracelist:
-            instruction = (str(CHAMPSIM_EXE_PATH) + "/champsim_" + i +
-                        " --warmup-instructions " + str(warmup_instructions) +
-                        " --simulation-instructions "  + str(simulated_instructions) + 
-                        " --json " + str(LOG_PATH) + "/"  + i + j + ".json " + str(TRACER_PATH) + "/" + j )
-            instruction_list.append(instruction)
-        # print("Instruction list :")
-        # print(instruction_list)
-        thread = threading.Thread(target = create_test , args = [instruction_list])
-        print ("Creating thread for:" + i )
-        thread.start()
-    for i in run_predictors:
-        thread.join()
-
-    # for some reason the files do not finish writing, even after they join
-    time.sleep(5)
-    
-    merge_json(run_predictors)
-
-    for i in run_predictors:
-        create_csv(str(LOG_PATH) + "/" + i+".json")
-
-    if (len(run_predictors) > 0):
-        time.sleep(3)
-        display_size_graph(run_predictors,size)
-
 main()
