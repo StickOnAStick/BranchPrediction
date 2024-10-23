@@ -1,5 +1,5 @@
 from test_parser import create_csv, display_graph, display_size_graph
-from recompiler import compile_all, compile_champsim_instance, find_2_pow, delete_make
+from recompiler import compile_all, compile_champsim_instance, find_2_pow, find_itt_ammount
 from loguru import logger
 from argparse import Namespace
 
@@ -49,11 +49,9 @@ def main():
         print(recompile_list)
         compile_all(recompile_list,size) # use -1 if we don't want to change the size
 
-    missing = check_missing(run_predictors)
-    if len(missing) != 0:
-        compile_missing(missing)
+    check_missing(run_predictors)
 
-        # find all of the files in the tracer folder, then copy the names into tracelist 
+    # find all of the files in the tracer folder, then copy the names into tracelist 
     file_list = os.listdir(TRACER_PATH)
 
     tracelist = []
@@ -61,17 +59,21 @@ def main():
         if (i.find('.xz') != -1): # filter out only tracer files 
             tracelist.append(i)
 
-    logger.info(f"Running the following predictors: {run_predictors}")
-    run_instructions(tracelist=tracelist, predictors=run_predictors)
-    # for some reason the files do not finish writing, even after they join
+    run_predictor_sizes = []
+    for predictor in run_predictors:
+        valid_sizes = find_itt_ammount(predictor,size)
+        for valid_size in valid_sizes:
+            run_predictor_sizes.append(predictor + "_size-" + str(valid_size[0]) + "bits")
+    logger.info(f"Running the following predictors: {run_predictor_sizes}")
+    run_instructions(tracelist=tracelist, predictors=run_predictor_sizes)
 
-    merge_json(run_predictors)
+    merge_json(run_predictor_sizes)
 
-    for i in run_predictors:
+    for i in run_predictor_sizes:
         create_csv(str(LOG_PATH) + "/" + i+".json")
 
     if (len(run_predictors) > 0):
-        display_size_graph(run_predictors,size)
+        display_size_graph(run_predictor_sizes,size)
 
         
 def parse_args():
@@ -88,7 +90,7 @@ def parse_args():
     return parser.parse_args()
 
 def config_setup(args: Namespace) -> None:
-    global warmup_instructions, simulated_instructions, recompile, run_predictors, size
+    global warmup_instructions, simulated_instructions, recompile, run_predictors, size, recompile_list
 
     args = parse_args()
 
@@ -121,10 +123,7 @@ def config_setup(args: Namespace) -> None:
         else:
             for predictor in args.predictors:             
                 if predictor in predictor_list:
-                    power = 0
-                    while pow(2,power) <= size:
-                        run_predictors.append(predictor+str(pow(2,power))+"k")
-                        power += 1
+                    run_predictors.append(predictor)
                 else:
                     logger.error(f"Predictor {predictor} not found in predictor list!")
                     SystemError(f"Predictor not found {predictor}")
@@ -133,12 +132,9 @@ def config_setup(args: Namespace) -> None:
         if "all" in args.recompile:
             recompile_list = predictor_list
         else:
-            for predictor in args.predictors:
-                if predictor in recompile_list:
-                    power = 0
-                    while pow(2,power) <= size:
-                        recompile_list.append(predictor+str(pow(2,power))+"k")
-                        power += 1
+            for predictor in args.recompile:
+                if predictor in predictor_list:
+                    recompile_list.append(predictor)
                 else:
                     logger.error(f"Recompile {predictor} not found in recompile list!")
                     SystemError(f"Predictor not found for recompilation {predictor}")
@@ -148,8 +144,8 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
     global CHAMPSIM_EXE_PATH, TRACER_PATH
     threads = []
     for predictor in predictors:
+        print ("Creating thread for:" + predictor)
         instruction_list = []
-
         for trace in tracelist:
             instruction = (str(CHAMPSIM_EXE_PATH) + "/champsim_" + predictor,
                         "--warmup-instructions", str(warmup_instructions),
@@ -162,7 +158,6 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
         # Create a new thread for a single predictor with multiple instructions.
         t = threading.Thread(target = create_test , args = [instruction_list])
         threads.append(t)
-        print ("Creating thread for:" + predictor )
         t.start()
     
     for t in threads:
@@ -172,20 +167,11 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
 # check if all of the tests the user requested are compiled 
 def check_missing(comp_list):
     compiled_execs = os.listdir(CHAMPSIM_EXE_PATH)
-    execs_to_compile = []
-
-    found = False
-    for i in comp_list:
-        for j in compiled_execs:
-            # print(("champsim_"+i)  + " |"+ j + "|" + str(found))
-            if (("champsim_"+i) == j): # search for existing compiled instances
-                found = True # if we find the instance already exists we can break
-                break
-        if (found == False): # if we didn't find an existing predictor we added to the list of predictors to be compiled 
-            # print(i)
-            execs_to_compile.append(i)
-        found = False # reset the found variable 
-    return execs_to_compile
+    for predictor in comp_list:
+        valid_sizes = find_itt_ammount(predictor,size)
+        for valid_size in valid_sizes:
+            if ("champsim_" + predictor + "_size-" + str(valid_size[0]) + "bits") not in compiled_execs:
+                compile_champsim_instance(predictor,valid_size)
 
 # compile the missing executables
 def compile_missing(comp_list: list[str]) -> list[str]: 

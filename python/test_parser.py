@@ -149,84 +149,54 @@ def create_csv(log):
             test += 1
         except: 
             break
-        
-                #print(data)
-
-
-    # find the name of the branch predictor from the json, the csv file will be named after it 
-    # print(len("python/Test_logs/"))
-    # print(len(".json"))
-    # print(log)
-    # print(log[len("python/Test_logs/"):(len(log) - len(".json"))])
-    # print(data)
-   
     data.to_csv(str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH))-2):(len(log) - len(".json"))] +".csv",mode='w+')
     # print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
 
 
-def display_size_graph(input,size):
+def display_size_graph(predictors,size):
     file_list = os.listdir(CSV_PATH)
-    
-    # get the types of predictors we will be running based on the names
-    predictor_list = []
-    predictors = []
-    for i in input:
-        count = 0
-        for j in reversed(i[:len(i)-1]):
-            try: 
-                a = int(j)
-                count += 1
-            except:
-                break
-        predictors.append([i[:len(i)-count-1],i[len(i)-count-1:len(i)-1],0])
-        predictor_list.append(i[:len(i)-count-1])
-    # print(predictors)
-    predictor_list = set(predictor_list)
-
     csvlist = []
-    for i in file_list:
-        for j in input:
-            if (i.find(j) != -1):
-                if (i.find('.csv') != -1): # filter out only tracer files 
-                    csvlist.append(i)
-    # print(csvlist)
-    count = 1
-    x_axis = []
-    while (count <= size):
-        x_axis.append(str(count))
-        count = count*2
-    
-    for p in predictors:
-        for c in csvlist:
-            branch_csvs = pd.read_csv(str(CSV_PATH) +"/" + c)
-            if (p[0] + str(p[1]) + "k.csv" == c):
-                p[2] =  branch_csvs["Branch Prediction Accuracy"].mean()
+    predictor_list = []
+    predictor_set = []
 
-    for pl in predictor_list:
-        temp_pred_list = []
-        for p in predictors:
-            if (p[0] == pl):
-                temp_pred_list.append(p[2])
+    # create a list object for each csv file,
+    # it contains the predictor type, predictor size, and average prediction acurracy for the tests that
+    for predictor in predictors:
+        splice1 = predictor.find("_size-")
+        splice2 = predictor.find("-bits")
+        branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + predictor + ".csv")
+        predictor_list.append([predictor[:splice1],predictor[splice1+6:splice2-3],branch_csvs["Branch Prediction Accuracy"].mean()])
+        predictor_set.append(predictor[:splice1])
+    predictor_set = set(predictor_set)
+    print(predictor_list)
+    print(predictor_set)
+  
+    for ps in predictor_set:
+        y_axis = []
+        x_axis = []
+        for pl in predictor_list:
+            if pl[0] == ps:
+                x_axis.append(int(pl[1]))
+                y_axis.append(pl[2])
         x_axis = np.array(x_axis)
-        y_axis = np.array(temp_pred_list)
-        plt.plot(x_axis,y_axis, label= pl)
+        y_axis = np.array(y_axis)
 
-        # creates a smooth graph but doesn't look very good
-
-        # x_axis = np.array(x_axis)
-        # y_axis = np.array(temp_pred_list)
-        # X_ = np.linspace(float(x_axis[0]), float(x_axis[len(x_axis)-1]), 50000)
+        # if you want an interped graph
+        # X_ = np.linspace(0, np.max(x_axis), 5000)
         # Y_ = pchip(x_axis,y_axis)
-        # plt.xscale('log', base=2)
-        # plt.plot(X_, Y_(X_), label= pl)
+        # plt.plot(X_, Y_(X_), label= ps)
+        
+        # if you want no interp
+        plt.xscale('log', base=2)
+        plt.plot(x_axis,y_axis, label= ps)
     
     plt.legend()
     plt.ylabel("Prediction Accuracy")
-    plt.xlabel("Predictor size (kbits)")
-        # plt.plot(x_axis,y_axis)
+    plt.xlabel("Predictor size (bits)")
     plt.show()
 
     # input: list of names of the predictors you want graphed 
+    # ALERT: this needs to be redone
 def display_graph(input):
     # This is the section of the program that graphs the data 
 

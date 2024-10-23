@@ -3,6 +3,7 @@ import json
 import subprocess
 import os
 import pathlib
+import math
 # this file is ment to compile all of the make files so they are ready for the tests
 # Compile the makefiles for each champsim instance with it's own predictor
 
@@ -18,6 +19,7 @@ assert CHAMPSIM_EXE_PATH.is_dir()
 assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
+min_size = 256
 def delete_make():
     # with open('_configuration.mk', "w") as config_file:
     #     config_file.seek(0)
@@ -57,12 +59,50 @@ def delete_make():
         os.rmdir(i)
     os.chdir('..')
 
+# this is literally copy and pasted from gemini but it works 
+def replace_from_position(string, old, new, position):
+  # Replaces a substring in a string starting from a specific position
+  return string[:position] + string[position:].replace(old, new, 1)
+
 # find all the powers of two below the input number
 def find_2_pow(max):
     count = 0
     while (pow(2,count) <= max):
         count += 1
     return count
+
+def find_itt_ammount(predictor, max):
+    max = max * 1024  # convert to kbits
+    # print (predictor + "|" + str(max))
+    predictor_sizes = []
+    size = 0
+    n = 0
+    match predictor:
+        case 'gshare' | 'global_history' | 'bimodal':
+           while (3*size <= max):
+                predictor_sizes.append([3*size,n])
+                size = pow(2,n)
+                n += 1
+        case "Bi-Mode":
+            while (9*size <= max):
+                predictor_sizes.append([9*size,n])
+                size = pow(2,n)
+                n += 1
+        case "local_history":
+            while (9*size <= max):
+                predictor_sizes.append([9*size,n])
+                size = pow(2,n)
+                n += 1
+    count = 0
+    for size in predictor_sizes:
+        if size[0] < min_size:
+            count += 1
+    return predictor_sizes[count:]
+            
+
+
+           
+
 
 
 def compile_champsim_instance(*args):
@@ -73,8 +113,9 @@ def compile_champsim_instance(*args):
     else:
         size = -1
     print("Compiling Predictor: " + predictor)
-    if (size != -1):
-        print("Compilation size = " + str(pow(2,size)*1024) + "Bits")
+    print("size:" + str(size[0]))
+    if (size[0] != -1):
+        # print("Compilation size = " + str(pow(2,size)*1024) + "Bits")
         with open((str(PREDICTOR_PATH) + "/" +predictor+"/"+predictor+".cc"),'r+') as c_file:
             c_code = c_file.read()
            # print(c_code)
@@ -83,19 +124,21 @@ def compile_champsim_instance(*args):
                 case 'gshare':
                     start = c_code.find("GS_HISTORY_TABLE_SIZE = ") + len("GS_HISTORY_TABLE_SIZE = ")
                     end = c_code.find(";", start)
-                    c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
                 case 'global_history':
                     start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
                     end = c_code.find(";", start)
-                    c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
+
                     start = c_code.find("HISTORY_LENGTH = ") + len("HISTORY_LENGTH = ")
                     end = c_code.find(";", start)
-                    c_code = c_code.replace(c_code[start:end],str(size+8),1)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+
                 case 'bimodal': 
                     start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
                     end = c_code.find(";", start)
-                    print("replacing table size with: " + str(pow(2,size)*256))
-                    c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
+
                 case "local_history":
                     start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
                     end = c_code.find(";", start)
@@ -114,6 +157,15 @@ def compile_champsim_instance(*args):
                     print(str(start)+"|"+str(end))
                     print("History length with " + str(size+8))
                     c_code = c_code.replace(c_code[start:end],str(size+8),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+                case "Bi-Mode":
+                    start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
+                    end = c_code.find(";", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/9)),start)
+
+                    start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
+                    end = c_code.find(";", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+
             c_file.seek(0)
             c_file.write(c_code)
             c_file.truncate()
@@ -126,8 +178,8 @@ def compile_champsim_instance(*args):
         with open(str(CONFIG_PATH) + "/" + predictor + "_config.json",'w') as config_file:
             data['ooo_cpu'][0]['branch_predictor'] = predictor # change the branch predictor
             if (size != -1):
-                data['executable_name'] = "champsim_" + predictor + str(pow(2,size)) + "k"# change the executable name
-                print("champsim_" + predictor + str(pow(2,size)) + "k")
+                data['executable_name'] = "champsim_" + predictor + "_size-" + str(size[0]) + "bits" # change the executable name
+                # print(data['executable_name'])
             else:
                 data['executable_name'] = "champsim_" + predictor # change the executable name
             # implement changes and close files 
@@ -155,11 +207,10 @@ def compile_champsim_instance(*args):
 # runs in series 
 def compile_all(predictors,size):
     print("Compiling Champsim instances(This may take a few minutes)")
-    size = find_2_pow(size)
     for i in predictors: 
         if (size != -1):
-            print(size)
-            for k in range(0,size):
+            print(find_itt_ammount(i,size))
+            for k in find_itt_ammount(i,size):
                 compile_champsim_instance(i,k)
         else:
             compile_champsim_instance(i)
