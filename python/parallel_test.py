@@ -57,7 +57,7 @@ def main():
 
     if recompile:
         logger.info(f"Recompiling the following predictors: {recompile_list}")
-        compile_all(recompile_list)
+        compile_all(recompile_list, -1)
 
     logger.info(f"Running the following predictors: {run_predictors}")
     tracelist: list[str] = [trace for trace in os.listdir(TRACER_PATH) if os.path.isdir(f"{TRACER_PATH}/{trace}")] # Select only top level directories.
@@ -132,9 +132,7 @@ def config_setup(args: Namespace) -> None:
 def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
     global CHAMPSIM_EXE_PATH, TRACER_PATH
     for predictor in predictors:
-        
         instruction_list = []
-        logger.debug(f"TRACE LIST: {tracelist}")
         # Create the list of instructions through concatenation
         for trace in tracelist:
             base_command = [
@@ -144,7 +142,6 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
                 f"{str(TRACER_PATH)}/{trace}"
             ]
             instruction = " ".join(base_command)      
-            logger.debug(instruction)  
             instruction_list.append(instruction)
 
         # Create a new thread for a single predictor with multiple instructions.
@@ -159,17 +156,17 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
 
 # Create a thread for each list of tests, the argument is a list of instructions 
 def create_test(instruction_list: list[str], predictor: str) -> None:
-    logger.debug(f"PREDICTOR: {predictor}")
+    logger.debug(f"CREATE TEST \nPREDICTOR: {predictor}\n Instruction list: {instruction_list}")
     log_name = str(LOG_PATH.joinpath(predictor.join("_log.txt"))) # I know this looks gross, but it's O(n) vs O(n^2)
     count = -1
-    logger.debug(f"LOG NAME: {log_name}\tINSTRUCTION LIST: {instruction_list}")
+    logger.debug(f"LOG NAME: {log_name}\t")
 
     n = len(instruction_list) #Number of processess to be created
 
 
     for j in range(n):
         with open(log_name,'w') as test_log:
-            logger.debug("writing to:" + log_name)
+            logger.debug("writing to: " + log_name)
             procs = [subprocess.Popen(i, shell=True, stdout=test_log) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))] ]
             #thread = threading.Thread(target = memchecker, args = [procs,log_name])
             #print("Starting Memchecker")
