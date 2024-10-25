@@ -141,7 +141,13 @@ def compile_champsim_instance(*args):
 
 
 # runs in series 
-def compile_all(predictors,size):
+def compile_all(predictors: list[str],size: int):
+    """
+        Function to recompile the branch predictors before running
+
+        @param size: -1 if no change, otherwise input 
+    """
+
     print("Compiling Champsim instances(This may take a few minutes)")
     size = find_2_pow(size)
     for i in predictors: 
