@@ -25,8 +25,8 @@ assert PREDICTOR_PATH.is_dir()
 
 printout = 1
 size = 1
-warmup_instructions = 100000
-simulated_instructions = 500000
+warmup_instructions = 1000000
+simulated_instructions = 5000000
 
 run_predictors: list[str] = []
 recompile_list: list[str] = []
@@ -166,31 +166,44 @@ def run_instructions(tracelist: list[str], predictors: list[str]) -> None:
 
 # check if all of the tests the user requested are compiled 
 def check_missing(comp_list):
+    print(comp_list)
     compiled_execs = os.listdir(CHAMPSIM_EXE_PATH)
     for predictor in comp_list:
-        valid_sizes = find_itt_ammount(predictor,size)
-        for valid_size in valid_sizes:
-            if ("champsim_" + predictor + "_size-" + str(valid_size[0]) + "bits") not in compiled_execs:
-                compile_champsim_instance(predictor,valid_size)
+        compile_missing(compiled_execs,predictor)
+
+    # Tried threading each predictor, make was upset and didn't work
+    #     thread = threading.Thread(target = compile_missing, args = [compiled_execs,predictor])
+    #     thread.start()
+
+    # for _ in comp_list:
+    #     thread.join()
+        
+def compile_missing(compiled_execs,predictor):
+    
+    valid_sizes = find_itt_ammount(predictor,size)
+    print(valid_sizes)
+    for valid_size in valid_sizes:
+        if ("champsim_" + predictor + "_size-" + str(valid_size[0]) + "bits") not in compiled_execs:
+            compile_champsim_instance(predictor,valid_size)
 
 # compile the missing executables
-def compile_missing(comp_list: list[str]) -> list[str]: 
-    # the following section is a cognito-hazard, I do not recommend looking at it if you wish to retain your sanity 
-    # there is a better version of this code in the test_parser
-    for i in comp_list:
-        tempsize = []
-        for j in reversed(i): # traverse the name of the instance to compile from the back
-            if j == "k":  # ignore the first k
-                continue 
-            else:
-                try: 
-                    tempsize.insert(0,int(j)) # insert each element into the tempsize variable, the try accept structure causes a break if int(j) cannot find any more ints 
-                except:
-                    break
-        i = i[0:len(i)-(len(tempsize)+1)] # remove the size of the predictor from the name
-        int_result = find_2_pow(int(''.join(map(str, tempsize)))) # cursed way to join lists of ints into one int 
-        #print(i)
-        compile_champsim_instance(i,int_result-1) # compile the predictor i with our joined integer list 
+# def compile_missing(comp_list: list[str]) -> list[str]: 
+#     # the following section is a cognito-hazard, I do not recommend looking at it if you wish to retain your sanity 
+#     # there is a better version of this code in the test_parser
+#     for i in comp_list:
+#         tempsize = []
+#         for j in reversed(i): # traverse the name of the instance to compile from the back
+#             if j == "k":  # ignore the first k
+#                 continue 
+#             else:
+#                 try: 
+#                     tempsize.insert(0,int(j)) # insert each element into the tempsize variable, the try accept structure causes a break if int(j) cannot find any more ints 
+#                 except:
+#                     break
+#         i = i[0:len(i)-(len(tempsize)+1)] # remove the size of the predictor from the name
+#         int_result = find_2_pow(int(''.join(map(str, tempsize)))) # cursed way to join lists of ints into one int 
+#         #print(i)
+#         compile_champsim_instance(i,int_result-1) # compile the predictor i with our joined integer list 
 
 def create_test(instruction_list):
     for i in instruction_list:

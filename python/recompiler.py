@@ -4,6 +4,7 @@ import subprocess
 import os
 import pathlib
 import math
+
 # this file is ment to compile all of the make files so they are ready for the tests
 # Compile the makefiles for each champsim instance with it's own predictor
 
@@ -19,7 +20,8 @@ assert CHAMPSIM_EXE_PATH.is_dir()
 assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
-min_size = 256
+tage_tables = 0
+min_size = 1024
 def delete_make():
     # with open('_configuration.mk', "w") as config_file:
     #     config_file.seek(0)
@@ -88,9 +90,28 @@ def find_itt_ammount(predictor, max):
                 predictor_sizes.append([9*size,n])
                 size = pow(2,n)
                 n += 1
+        case 'yags':
+            while ((9+(2*8))*size <= max):
+                predictor_sizes.append([(9+(2*8))*size,n])
+                size = pow(2,n)
+                n += 1
         case "local_history":
-            while (9*size <= max):
-                predictor_sizes.append([9*size,n])
+           while (3*size <= max):
+                predictor_sizes.append([3*size,n])
+                size = pow(2,n)
+                n += 1
+        case "tage" | "tage2" | "tage4" | "tage8" | "tage16":
+        # tage size = bimodal_table_size*bimodal_bits + tablenum*2^indexsize*(tage_bimodal_bits*tag_length*useful_bits)
+        # size = bimodal_table_size*3 + tablenum*(bimodal_table_size/4)*(7+2+2)
+        # size = 3*(tablenum+1)(bimodal_table_size)
+            with open((str(PREDICTOR_PATH) + "/" +predictor+"/"+predictor+".cc"),'r+') as c_file:
+                c_code = c_file.read()
+                start = c_code.find("TAGE_TABLES ") + len("TAGE_TABLES ")
+                end = c_code.find("\n", start)
+                tage_tables = int(c_code[start:end])
+            c_file.close()
+            while (3*(tage_tables+1)*size <= max):
+                predictor_sizes.append([3*(tage_tables+1)*size,n])
                 size = pow(2,n)
                 n += 1
     count = 0
@@ -157,6 +178,7 @@ def compile_champsim_instance(*args):
                     print(str(start)+"|"+str(end))
                     print("History length with " + str(size+8))
                     c_code = c_code.replace(c_code[start:end],str(size+8),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+
                 case "Bi-Mode":
                     start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
                     end = c_code.find(";", start)
@@ -165,6 +187,23 @@ def compile_champsim_instance(*args):
                     start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
                     end = c_code.find(";", start)
                     c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+                case "yags":
+                    start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
+                    end = c_code.find(";", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(9+(2*8)))),start)
+
+                    start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
+                    end = c_code.find(";", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+
+                case "tage" | "tage2" | "tage4" | "tage8" | "tage16":
+                    start = c_code.find("BIMODAL_TABLE_SIZE ") + len("BIMODAL_TABLE_SIZE ")
+                    end = c_code.find("\n", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(3*(tage_tables+1)))),start)
+
+                    start = c_code.find("MAX_INDEX_BITS ") + len("MAX_INDEX_BITS ")
+                    end = c_code.find("\n", start)
+                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-3),start)
 
             c_file.seek(0)
             c_file.write(c_code)
@@ -208,6 +247,7 @@ def compile_champsim_instance(*args):
 def compile_all(predictors,size):
     print("Compiling Champsim instances(This may take a few minutes)")
     for i in predictors: 
+        threading.Thread()
         if (size != -1):
             print(find_itt_ammount(i,size))
             for k in find_itt_ammount(i,size):
