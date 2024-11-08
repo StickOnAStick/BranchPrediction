@@ -82,6 +82,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "codecvt": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "string_view": "cpp"
     }
 }

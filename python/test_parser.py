@@ -27,6 +27,7 @@ assert PREDICTOR_PATH.is_dir()
 
 def PARSE_JSON(log,test):
     params=["Test",
+            "Size",
             "Branch Prediction Accuracy",
             "instructions",
             "cycles",
@@ -41,14 +42,18 @@ def PARSE_JSON(log,test):
                     "BRANCH_INDIRECT_CALL",
                     "BRANCH_RETURN"]
     
-    output = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+    output = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     with open(log,"r") as file:
         data = json.load(file)
-        output[0] = data[test]['traces'][0]
+        output[0] = data[test]['traces'][0][len(str(TRACER_PATH))+1:len(str(data[test]['traces'][0]))-len(".champsimtrace.xz")]
+        try: 
+            output[1] = data[test]['traces'][1]
+        except: 
+            output[1] = 0
         a = data[test]['sim']['cores'][0]
-        for i in range(1,len(params)-1):
+        for i in range(2,len(params)-1):
             output[i] = data[test]['sim']['cores'][0][params[i]]
-        output[6] = data[test]['sim']['cores'][0][params[4]]/data[test]['sim']['cores'][0][params[3]]
+        output[7] = data[test]['sim']['cores'][0][params[5]]/data[test]['sim']['cores'][0][params[4]]
         for i in range(0,len(mispredict)):
             output[i+7] = data[test]['sim']['cores'][0]['mispredict'][mispredict[i]]
         for i in mispredict:
@@ -58,76 +63,13 @@ def PARSE_JSON(log,test):
 
 
 
-
-# def Subparse(string,log_text):
-#     # ChampSim/tracer/600.perlbench_s-210B.champsimtrace.xz
-
-
-#     start = string.find("tracer/") + len("tracer/")
-#     stop = string.find(".champsimtrace.xz")
-#     output[0] = string[start:stop]
-
-#     start = string.find("CPU 0 cumulative IPC: ") + len("CPU 0 cumulative IPC:")
-#     stop = string.find(" instructions: ",start)
-#     output[1] = float(string[start:stop])
-
-#     start = stop + len(" instructions: ")
-#     stop = string.find("cycles:",start)
-#     output[2] = float(string[start:stop])
-
-#     start = stop + len("cycles:")
-#     stop = string.find("CPU 0 Branch Prediction Accuracy:",start)
-#     output[3] = float(string[start:stop])
-
-#     start = stop + len("CPU 0 Branch Prediction Accuracy:")
-#     stop = string.find("% MPKI: ",start)
-#     output[4] = float(string[start:stop])
-
-#     start = stop + len("% MPKI: ")
-#     stop = string.find(" Average ROB Occupancy at Mispredict: ",start)
-#     output[5] = float(string[start:stop])
-
-#     start = stop + len(" Average ROB Occupancy at Mispredict: ")
-#     stop = string.find("Branch type MPKI",start)
-#     output[6] = float(string[start:stop])
-
-#     start = string.find("BRANCH_DIRECT_JUMP:") + len("BRANCH_DIRECT_JUMP:")
-#     stop = string.find("BRANCH_INDIRECT:",start)
-#     output[7] = float(string[start:stop])
-
-#     start = stop + len("BRANCH_INDIRECT:")
-#     stop = string.find("BRANCH_CONDITIONAL:",start)
-#     output[8] = float(string[start:stop])
-
-#     start = stop + len("BRANCH_CONDITIONAL:")
-#     stop = string.find("BRANCH_DIRECT_CALL:",start)
-#     output[9] = float(string[start:stop])
-
-#     start = stop + len("BRANCH_DIRECT_CALL:")
-#     stop = string.find("BRANCH_INDIRECT_CALL:",start)
-#     output[10] = float(string[start:stop])
-
-#     start = stop + len("BRANCH_INDIRECT_CALL:")
-#     stop = string.find("BRANCH_RETURN:",start)
-#     output[11] = float(string[start:stop])
-
-#     start = stop + len("BRANCH_RETURN:")
-#     output[12] = float(string[start:len(string)])
-
-#     start = string.find("(Simulation time: ") + len("(Simulation time: ")
-#     stop = string.find(")",start)
-#     output[13] = string[start:stop]
-
-#     append_data = pd.DataFrame(list([output]),columns=params)
-#     # print(append_data)
-#     return append_data
-
 # find the relavent text blocks in the champsim_log output 
 # parse the individual components of the text block into a dataframe
 # concatenate the tests together to get one dataframe of tests
-def create_csv(log):
+def create_csv():
     # print ("creating a csv file for: " + log)
     params =["Test",
+            "Size",
             "Branch Prediction Accuracy",
             "instructions",
             "cycles",
@@ -140,41 +82,55 @@ def create_csv(log):
             "BRANCH_INDIRECT",
             "BRANCH_INDIRECT_CALL",
             "BRANCH_RETURN"]
-    data = pd.DataFrame(columns=params)
-    test = 0
-    while True:
-        try:
-            append_data = PARSE_JSON(log,test)
-            data = pd.concat([data,append_data])
-            test += 1
-        except: 
-            break
-    data.to_csv(str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH))-2):(len(log) - len(".json"))] +".csv",mode='w+')
+
+
+    for json_file in os.listdir(LOG_PATH):
+        data = pd.DataFrame(columns=params)
+        test = 0
+        while True:
+            try:
+                append_data = PARSE_JSON(str(LOG_PATH) + "/" + json_file,test)
+                data = pd.concat([data,append_data])
+                test += 1
+            except: 
+                break
+        data.sort_values(['Size'],inplace=True)
+        data.to_csv(str(CSV_PATH) + "/" + json_file[:len(json_file)-len(".json")] + ".csv", mode='w+')
     # print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
 
 
 def display_size_graph(predictors,size):
     file_list = os.listdir(CSV_PATH)
     csvlist = []
-    predictor_list = []
+    predictor_list = [0,0,0]
     predictor_set = []
 
     # create a list object for each csv file,
     # it contains the predictor type, predictor size, and average prediction acurracy for the tests that
+    for file in file_list:
+        branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + file)
+        size_set = set(branch_csvs["Size"]) 
+        number_of_test_per_size = int(len(branch_csvs.index) / len(size_set)) 
+        predictor_list[0] = file[:len(file)-len(".cvs")]
+        count = 0
+        for size in size_set:
+            count += 1
+            predictor_list[1] = size
+            for i in range(0,len(branch_csvs.index)):
+                if size == branch_csvs["Size"][i]:
+                    predictor_list[2]+= branch_csvs["Branch Prediction Accuracy"][i]
+            predictor_list[2] = predictor_list[2] / number_of_test_per_size
+            predictor_set.append(predictor_list[:])
+            predictor_list[2] = 0
+    
+    size_independent_predictors = []
     for predictor in predictors:
-        splice1 = predictor.find("_size-")
-        splice2 = predictor.find("-bits")
-        branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + predictor + ".csv")
-        predictor_list.append([predictor[:splice1],predictor[splice1+6:splice2-3],branch_csvs["Branch Prediction Accuracy"].mean()])
-        predictor_set.append(predictor[:splice1])
-    predictor_set = set(predictor_set)
-    print(predictor_list)
-    print(predictor_set)
-  
-    for ps in predictor_set:
+        size_independent_predictors.append(predictor[:predictor.find("_size")])
+    predictor_set.sort(key=asort)
+    for ps in set(size_independent_predictors):
         y_axis = []
         x_axis = []
-        for pl in predictor_list:
+        for pl in predictor_set:
             if pl[0] == ps:
                 x_axis.append(int(pl[1]))
                 y_axis.append(pl[2])
@@ -188,13 +144,14 @@ def display_size_graph(predictors,size):
         
         # if you want no interp
         plt.xscale('log', base=2)
-        plt.plot(x_axis,y_axis, label= ps)
+        plt.plot(x_axis,y_axis, label = ps)
     
     plt.legend()
     plt.ylabel("Prediction Accuracy")
     plt.xlabel("Predictor size (bits)")
-    plt.show()
-
+    plt.show(block=True)
+def asort(val):
+    return val[1]
     # input: list of names of the predictors you want graphed 
     # ALERT: this needs to be redone
 def display_graph(input):
@@ -203,13 +160,14 @@ def display_graph(input):
     print(os.getcwd())
     # Find the CSV logs 
     # then add them to the test if they have unique names 
-    file_list = os.listdir(python_path + "Trace_tests") 
+    file_list = os.listdir(str(CSV_PATH)) 
     csvlist = []
     for i in file_list:
         for j in input:
             if (i.find(j) != -1):
                 if (i.find('.csv') != -1): # filter out only tracer files 
                     csvlist.append(i)
+                    break
                     
     print(csvlist)
     csvlist.sort(key = str.casefold)
@@ -223,7 +181,7 @@ def display_graph(input):
     # todo, this code looks awful please rewrite if showing anyone else
     for i in csvlist:
         
-        branch_csvs = pd.read_csv(python_path + "Trace_tests/" + i)
+        branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + i)
         BPA = branch_csvs["Branch Prediction Accuracy"]
         bar_offset = []
         a = np.arange(float(len(BPA)))
@@ -235,7 +193,7 @@ def display_graph(input):
             plt.text( i.get_x() + i.get_width()/2, height, f'{height:.2f}', ha='center', va='bottom')
         count += 1
 
-    branch_csvs = pd.read_csv(python_path + "Trace_tests/" + csvlist[0])
+    branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + csvlist[0])
     # label axis
     plt.xlabel('Trace Benchmarks', fontweight ='bold', fontsize = 15) 
     plt.ylabel('Branch Prediction Accuracy', fontweight ='bold', fontsize = 15) 
@@ -249,7 +207,7 @@ def display_graph(input):
     plt.xticks([r+barwidth for r in range(len(branch_csvs))],branch_csvs["Test"])
 
     plt.legend()
-    plt.show()
+    plt.show(block=True)
 
 #create_csv("ChampSim/python/Test_logs/bimodal1k.json")
 

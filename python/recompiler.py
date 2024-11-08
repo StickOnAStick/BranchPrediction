@@ -21,7 +21,7 @@ assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
 tage_tables = 0
-min_size = 1024
+min_size = 32000
 def delete_make():
     # with open('_configuration.mk', "w") as config_file:
     #     config_file.seek(0)
@@ -134,82 +134,84 @@ def compile_champsim_instance(*args):
     else:
         size = -1
     print("Compiling Predictor: " + predictor)
-    print("size:" + str(size[0]))
-    if (size[0] != -1):
-        # print("Compilation size = " + str(pow(2,size)*1024) + "Bits")
-        with open((str(PREDICTOR_PATH) + "/" +predictor+"/"+predictor+".cc"),'r+') as c_file:
-            c_code = c_file.read()
-           # print(c_code)
-           # becuase we can't change the variables in the C code we need to make scaling size for each branch predictor
-            match predictor:
-                case 'gshare':
-                    start = c_code.find("GS_HISTORY_TABLE_SIZE = ") + len("GS_HISTORY_TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
-                case 'global_history':
-                    start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
+    try:
+        if ((size[0] != -1) or (args[1] != -1)):
+            print("size:" + str(size[0]))
+            # print("Compilation size = " + str(pow(2,size)*1024) + "Bits")
+            with open((str(PREDICTOR_PATH) + "/" +predictor+"/"+predictor+".cc"),'r+') as c_file:
+                c_code = c_file.read()
+            # print(c_code)
+            # becuase we can't change the variables in the C code we need to make scaling size for each branch predictor
+                match predictor:
+                    case 'gshare':
+                        start = c_code.find("GS_HISTORY_TABLE_SIZE = ") + len("GS_HISTORY_TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
+                    case 'global_history':
+                        start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
 
-                    start = c_code.find("HISTORY_LENGTH = ") + len("HISTORY_LENGTH = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+                        start = c_code.find("HISTORY_LENGTH = ") + len("HISTORY_LENGTH = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
 
-                case 'bimodal': 
-                    start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
+                    case 'bimodal': 
+                        start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/3)),start)
 
-                case "local_history":
-                    start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    print(str(start)+"|"+str(end))
-                    print("replacing table size with: " + str(pow(2,size)*256))
-                    c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1) # multiply by the n * 2k * 4 = n*8096 = nkb
-                    
-                    start = c_code.find("HISTORY_TABLE_SIZE = ") + len("HISTORY_TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    print(str(start)+"|"+str(end))
-                    print("replacing table size with: " + str(pow(2,size)*32))
-                    c_code = c_code.replace(c_code[start:end],str(pow(2,size)*32),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+                    case "local_history":
+                        start = c_code.find("BIMODAL_TABLE_SIZE = ") + len("BIMODAL_TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        print(str(start)+"|"+str(end))
+                        print("replacing table size with: " + str(pow(2,size)*256))
+                        c_code = c_code.replace(c_code[start:end],str(pow(2,size)*256),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+                        
+                        start = c_code.find("HISTORY_TABLE_SIZE = ") + len("HISTORY_TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        print(str(start)+"|"+str(end))
+                        print("replacing table size with: " + str(pow(2,size)*32))
+                        c_code = c_code.replace(c_code[start:end],str(pow(2,size)*32),1) # multiply by the n * 2k * 4 = n*8096 = nkb
 
-                    start = c_code.find("INDEX_SIZE = ") + len("INDEX_SIZE = ")
-                    end = c_code.find(";", start)
-                    print(str(start)+"|"+str(end))
-                    print("History length with " + str(size+8))
-                    c_code = c_code.replace(c_code[start:end],str(size+8),1) # multiply by the n * 2k * 4 = n*8096 = nkb
+                        start = c_code.find("INDEX_SIZE = ") + len("INDEX_SIZE = ")
+                        end = c_code.find(";", start)
+                        print(str(start)+"|"+str(end))
+                        print("History length with " + str(size+8))
+                        c_code = c_code.replace(c_code[start:end],str(size+8),1) # multiply by the n * 2k * 4 = n*8096 = nkb
 
-                case "Bi-Mode":
-                    start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/9)),start)
+                    case "Bi-Mode":
+                        start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/9)),start)
 
-                    start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
-                case "yags":
-                    start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(9+(2*8)))),start)
+                        start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+                    case "yags":
+                        start = c_code.find("TABLE_SIZE = ") + len("TABLE_SIZE = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(9+(2*8)))),start)
 
-                    start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
-                    end = c_code.find(";", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
+                        start = c_code.find("GLOBAL_HISTORY_LENGTH = ") + len("GLOBAL_HISTORY_LENGTH = ")
+                        end = c_code.find(";", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-1),start)
 
-                case "tage" | "tage2" | "tage4" | "tage8" | "tage16":
-                    start = c_code.find("BIMODAL_TABLE_SIZE ") + len("BIMODAL_TABLE_SIZE ")
-                    end = c_code.find("\n", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(3*(tage_tables+1)))),start)
+                    case "tage" | "tage2" | "tage4" | "tage8" | "tage16":
+                        start = c_code.find("BIMODAL_TABLE_SIZE ") + len("BIMODAL_TABLE_SIZE ")
+                        end = c_code.find("\n", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(int(size[0]/(3*(tage_tables+1)))),start)
 
-                    start = c_code.find("MAX_INDEX_BITS ") + len("MAX_INDEX_BITS ")
-                    end = c_code.find("\n", start)
-                    c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-3),start)
+                        start = c_code.find("MAX_INDEX_BITS ") + len("MAX_INDEX_BITS ")
+                        end = c_code.find("\n", start)
+                        c_code = replace_from_position(c_code, c_code[start:end], str(size[1]-3),start)
 
-            c_file.seek(0)
-            c_file.write(c_code)
-            c_file.truncate()
-            c_file.close()
-
+                c_file.seek(0)
+                c_file.write(c_code)
+                c_file.truncate()
+                c_file.close()
+    except:
+        print("no size specified")
     # create a copy of the configuration json and create our own config and add it to the files 
     with open((MAIN_PATH.joinpath("ChampSim/champsim_config.json")),'r') as file:
         data = json.load(file)
@@ -244,16 +246,18 @@ def compile_champsim_instance(*args):
 
 
 # runs in series 
-def compile_all(predictors,size):
-    print("Compiling Champsim instances(This may take a few minutes)")
+def compile_all(predictors: list[str],size: int):
+    print(size)
+    print("Compiling Champsim instances(This may take a few minutes) size = " + str(size))
     for i in predictors: 
-        threading.Thread()
+        # threading.Thread()
         if (size != -1):
             print(find_itt_ammount(i,size))
             for k in find_itt_ammount(i,size):
                 compile_champsim_instance(i,k)
         else:
-            compile_champsim_instance(i)
+            print("Compiling champsim instance:" + i)
+            compile_champsim_instance(i,-1)
     print("Instance Compilation has finished")
 
 # os.chdir("Z:/shared_files/Champsim/BranchPrediction/Champsim")
