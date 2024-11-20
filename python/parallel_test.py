@@ -29,7 +29,7 @@ warmup_instructions = 200000
 simulated_instructions = 500000
 log_path = "python/Test logs/champsim_"
 path = 'bin/champsim'        # path for executable
-tracer = 'tracer'            # path for tracer tests
+tracer = 'ChampSim/tracer'            # path for tracer tests
 predictor = 'branch'      # path for predictors 
 
 
@@ -110,7 +110,7 @@ def create_test(instruction_list, predictor):
     log_name = log_path + predictor + "_log.txt"
     count = -1
     n = len(instruction_list) #Number of processess to be created
-    for j in range(max(int(len(instruction_list)/n), 1)):
+    for j in range(n):
         with open(log_name,'w') as test_log:
             print("writing to:" + log_name)
             procs = [subprocess.Popen(i, shell=True, stdout=test_log) for i in instruction_list[j*n: min((j+1)*n, len(instruction_list))] ]
