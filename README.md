@@ -115,3 +115,9 @@ Also ensure you've set VsCode's interpreter to use the poetry venv. You can chan
  ```
  BranchPredictor/.venv/bin/python3.12
  ```
+
+
+__ALSO:__ If you're using Ubuntu >= 22.04 you'll need to install _libxcb-cursor_ for displaying graphs. Do so using: 
+```bash
+sudo apt install libxcb-cursor0
+```  

@@ -8,7 +8,7 @@ import subprocess
 def compile_champsim_instance(predictor):
     print("Compiling:" + predictor)
     # create a copy of the configuration json and create our own config and add it to the files 
-    with open(("champsim_config.json"),'r') as file:
+    with open(("ChampSim/champsim_config.json"),'r') as file:
         data = json.load(file)
         remove = data['ooo_cpu'][0]['branch_predictor'] # remove this when not debugging 
         with open("python/Test_configs/" + predictor + "_config.json",'w') as config_file:
@@ -21,7 +21,7 @@ def compile_champsim_instance(predictor):
             config_file.truncate()
             config_file.close()
             file.close()
-            subprocess.Popen(["./config.sh", "python/Test_configs/" + predictor + "_config.json"])
+            subprocess.Popen(["./ChampSim/config.sh", "python/Test_configs/" + predictor + "_config.json"])
             subprocess.run("make") 
 
 # runs in series 
