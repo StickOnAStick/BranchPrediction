@@ -17,12 +17,15 @@ CHAMPSIM_EXE_PATH   = MAIN_PATH.joinpath("ChampSim/bin/")
 TRACER_PATH         = MAIN_PATH.joinpath("ChampSim/tracer") # Tracer tests 
 PREDICTOR_PATH      = MAIN_PATH.joinpath("ChampSim/branch") # Predictors
 CONFIG_PATH         = MAIN_PATH.joinpath("python/Test_configs")
+SPEED_PATH          = MAIN_PATH.joinpath("python/Speed_logs")
+
 
 assert LOG_PATH.is_dir()
 assert CSV_PATH.is_dir()
 assert CHAMPSIM_EXE_PATH.is_dir()
 assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
+assert SPEED_PATH.is_dir()
 
 
 def PARSE_JSON(log,test):
@@ -154,6 +157,43 @@ def asort(val):
     return val[1]
     # input: list of names of the predictors you want graphed 
     # ALERT: this needs to be redone
+
+def display_speed_graph():
+    file_list = os.listdir(str(SPEED_PATH))
+    for file in file_list:
+        cycle_list = []
+        accuracy_list = []
+        with open(str(SPEED_PATH) + "/" + file) as speed_file:
+            speed = speed_file.read()
+            sim_finish = speed.find("Simulation finished CPU")
+            end = 0
+            while(end < sim_finish or end == -1):
+                print (str(end) + "|" + str(sim_finish))
+                begin = speed.find("Heartbeat CPU 0 instructions:",end)+ len("Heartbeat CPU 0 instructions:")
+                end = speed.find("cycles:",begin)
+                
+                if ((end - begin) >= 50):
+                    break
+                cycle_list.append(int(speed[begin:end]))
+                begin = speed.find("Prediction_Accuracy:",end)+ len("Prediction_Accuracy:")
+                end = speed.find("%",begin)
+                if ((end - begin) >= 50):
+                    break
+                accuracy_list.append(float(speed[begin:end]))
+            x_axis = np.array(cycle_list)
+            y_axis = np.array(accuracy_list)
+        plt.plot(x_axis,y_axis, label = file)
+        
+
+        # if you want an interped graph
+        # X_ = np.linspace(0, np.max(x_axis), 5000)
+        # Y_ = pchip(x_axis,y_axis)
+        # plt.plot(X_, Y_(X_), label= file_list)
+    plt.legend()
+    plt.ylabel("Prediction Accuracy")
+    plt.xlabel("Instruction cycles")
+    plt.show(block=True)
+
 def display_graph(input):
     # This is the section of the program that graphs the data 
 

@@ -38,7 +38,7 @@ assert TRACER_PATH.is_dir()
 assert PREDICTOR_PATH.is_dir()
 
 printout = 1
-warmup_instructions = 200000
+warmup_instructions = 0
 simulated_instructions = 500000
 
 run_predictors: list[str] = []

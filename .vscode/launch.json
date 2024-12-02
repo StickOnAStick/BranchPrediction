@@ -1,5 +1,6 @@
 {
     "configurations": [
+
         {
             "name": "size_test.py",
             "type": "debugpy",
@@ -18,7 +19,7 @@
         },
         {
             "name": "parallel_test.py",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "args": [
@@ -28,6 +29,22 @@
                 "tage4",
                 "tage",
                 "yags"
+            ]
+        },
+        {
+            "name": "training_speed_test.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--warmup_instructions",
+                "000 ",
+                "--simulation_instructions",
+                "10000000 ",
+                "--predictors",
+                "tage4",
+                "yags",
+                "Bi-Mode"
             ]
         },
         {
