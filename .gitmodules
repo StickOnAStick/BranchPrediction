@@ -1,3 +1,4 @@
 [submodule "ChampSim"]
     path = ChampSim
     url = "https://github.com/StickOnAStick/ChampSimLocal.git"
+	branch = master
