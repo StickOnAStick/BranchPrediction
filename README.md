@@ -4,47 +4,65 @@ Description of the project goes here
 
 ## Contributors
 Nick
-Ayman
 John
-
-## Extras
+Evan
+Ayman
 
 
 # Running and installation
 
-## Champsim Windows setup:
+## Clone and initalize repo
 
-### Installation
-Firstly, clone the Champsim repo into the BranchPrediction Repository via:
+Clone this repo into a chosen directory with:
+```bash
+git clone git@github.com:StickOnAStick/BranchPrediction.git
+```
 
-`git clone git@github.com:ChampSim/ChamdpSim.git`
+**Initalize** the ___ChampSim___ submodule
+```bash
+cd BranchPrediciton
+git submodule update --init
+```
+Your `./ChampSim` directory will now be filled with content. 
 
-You should now have a `BranchPrediction/ChampSim` directory. We also need to update and install __VCpkg__ for __C/C++ dependencies__. To do this first navigate inside the created _ChampSim_ directory and run: 
+## Initalizing ChampSim
+#### Important Note for Windows Users:
+ChampSim is designed to be run on a _Debian-Based_ operating system. If you're using Windows you will need to execute the following commands in __WSL__ (Windows Sub-System for Linux) __OR__ a __Virtual Machine__ running Ubuntu, Arch, Mint, etc.
 
-`git submodule update --init`
+### Pull latest ChampSim changes
+Our current submodule is a detached head, because of this we need to checkout the master to ensure we're working off the latest revision.
+```bash
+git checkout master
+```
 
-To install the C/C++ dependencies run the following two commands:
+### Download ChampSim dependencies
 
-`vcpkg/bootstrap-vcpkg.bat` __(Windows)__ `vcpkg/bootstrap-vcpkg.sh` **(Linux)**
+#### Pre-Requisites  
+You will need to have the following apt packages installed: 
+```bash
+sudo apt install curl zip unzip tar gcc ninja-build clang pkg-config
+```
 
-`vcpkg/vcpkg.exe install --triplet x64-linux` __(Windows)__ `vcpkg/vcpkg install` __(Linux)__
+ChampSim relies on VCPKG to manage dependencies. To install it and all packages use the following commands from the `/ChampSim/.` directory.
 
-#### IMPORTANT NOTE:
-Yes, we __ARE compiling to linux__ despite being on windows! You can do this in wsl, and run champsim as normal. 
+```bash
+git submodule update --init 
+sudo vcpkg/bootstrap-vcpkg.sh
+sudo vcpkg/vcpkg install
+```
+These will download the vcpkg submodule, setup the vcpkg configuration, and install all the packages.
 
-The reason for this is due to the makefile being written for UNIX-based systems. If you want to, you can re-write the commands to make it Windows compatible. ~10 min.
-
-### Compilation
-
-If you're using windows, we will need to access wsl for a moment. Open a wsl terminal and run `./config.sh` from the ChampSim directory.
-
-This will create a `_configuration.mk` file in the main directory.
-
-Now we can make the main _ChampSim_ project. To do so, use `make clean` _to ensure your project is clean_ then run `make` in the main ChampSim directory. 
+### Build Champsim
+Setup the champsim configuration.
+```bash
+./config.sh <file_name> // Leave blank to use default
+make
+```
+This will create a `_configuration.mk` file in the main ChampSim directory.
 
 
-### Notes:
-If you get `Error 1` after running `make`
+If successfully built from here you're set to begin development!
+
 
 
 
