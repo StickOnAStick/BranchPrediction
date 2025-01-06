@@ -4,47 +4,128 @@ Description of the project goes here
 
 ## Contributors
 Nick
-Ayman
 John
-
-## Extras
+Evan
+Ayman
 
 
 # Running and installation
 
-## Champsim Windows setup:
+## Clone and initalize repo
 
-### Installation
-Firstly, clone the Champsim repo into the BranchPrediction Repository via:
+Clone this repo into a chosen directory with:
+```bash
+git clone git@github.com:StickOnAStick/BranchPrediction.git
+```
 
-`git clone git@github.com:ChampSim/ChamdpSim.git`
+**Initalize** the ___ChampSim___ submodule
+```bash
+cd BranchPrediciton
+git submodule update --init
+```
+Your `./ChampSim` directory will now be filled with content. 
 
-You should now have a `BranchPrediction/ChampSim` directory. We also need to update and install __VCpkg__ for __C/C++ dependencies__. To do this first navigate inside the created _ChampSim_ directory and run: 
+## Initalizing ChampSim
+#### Important Note for Windows Users:
+ChampSim is designed to be run on a _Debian-Based_ operating system. If you're using Windows you will need to execute the following commands in __WSL__ (Windows Sub-System for Linux) __OR__ a __Virtual Machine__ running Ubuntu, Arch, Mint, etc.
 
-`git submodule update --init`
+### Pull latest ChampSim changes
+Our current submodule is a detached head, because of this we need to checkout the master to ensure we're working off the latest revision.
+```bash
+git checkout master
+```
 
-To install the C/C++ dependencies run the following two commands:
+### Download ChampSim dependencies
 
-`vcpkg/bootstrap-vcpkg.bat` __(Windows)__ `vcpkg/bootstrap-vcpkg.sh` **(Linux)**
+#### Pre-Requisites  
+You will need to have the following apt packages installed: 
+```bash
+sudo apt install curl zip unzip tar gcc ninja-build clang pkg-config
+```
 
-`vcpkg/vcpkg.exe install --triplet x64-linux` __(Windows)__ `vcpkg/vcpkg install` __(Linux)__
+ChampSim relies on VCPKG to manage dependencies. To install it and all packages use the following commands from the `/ChampSim/.` directory.
 
-#### IMPORTANT NOTE:
-Yes, we __ARE compiling to linux__ despite being on windows! You can do this in wsl, and run champsim as normal. 
+```bash
+git submodule update --init 
+sudo vcpkg/bootstrap-vcpkg.sh
+sudo vcpkg/vcpkg install
+```
+These will download the vcpkg submodule, setup the vcpkg configuration, and install all the packages.
 
-The reason for this is due to the makefile being written for UNIX-based systems. If you want to, you can re-write the commands to make it Windows compatible. ~10 min.
-
-### Compilation
-
-If you're using windows, we will need to access wsl for a moment. Open a wsl terminal and run `./config.sh` from the ChampSim directory.
-
-This will create a `_configuration.mk` file in the main directory.
-
-Now we can make the main _ChampSim_ project. To do so, use `make clean` _to ensure your project is clean_ then run `make` in the main ChampSim directory. 
+### Build Champsim
+Setup the champsim configuration.
+```bash
+./config.sh <file_name> // Leave blank to use default
+make
+```
+This will create a `_configuration.mk` file in the main ChampSim directory.
 
 
-### Notes:
-If you get `Error 1` after running `make`
+If successfully built from here you're set to begin development!
+
+# Installing CUDA for ChampSim
+
+### Using Windows WSL or Linux
+
+If using a Windows machine that already has the [CUDA ToolKit](https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=11) installed follow this guide carefully as we make steps to ensure no overwrites occur. 
+
+[The full guide](https://docs.nvidia.com/cuda/wsl-user-guide/index.html) for this goes into more detail and is worth a read, this guide will only cover key topics to get up & running (Steps 3+ on Nvidia's guide).
+
+
+### Install WSL cuda drivers
+Get the local [WSL Cuda Drivers](https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local)
+
+The following will install the _CUDA ToolKit_ **NOT THE DRIVER**
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/12.6.3/local_installers/cuda-repo-wsl-ubuntu-12-6-local_12.6.3-1_amd64.deb
+sudo dpkg -i cuda-repo-wsl-ubuntu-12-6-local_12.6.3-1_amd64.deb
+sudo cp /var/cuda-repo-wsl-ubuntu-12-6-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-12-6
+```
+
+**DO NOT** install the drivers in WSL. You should already have [the drivers](https://www.nvidia.com/en-us/drivers/) installed locally on your windows machine via Nvidia App or manual install.
+
+After the installation you might've noticed that `nvcc --version` is still not working. To remedy this, we need to add the just installed _CUDA ToolKit_ to our path by updating `bash.rc`
+
+```bash
+nano ~/.bashrc 
+# OR (recommended extension)
+micro ~/.bashrc
+```
+Inside here add the following exports near the top, similar to adding PATH variables on Windows.
+**Note**: Verify the PATHs to each of these directories for your own machine.
+```bash
+export PATH="/usr/local/cuda-12.6/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/cuda-12.6/lib64:$LD_LIBRARY_PATH" 
+```
+In order to see the changes either `close and open another terminal` **or** run `source ~/.bashrc`
+
+#### Check installation
+
+```bash
+~$ nvcc --version
+# Should return this: 
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Tue_Oct_29_23:50:19_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.85
+Build cuda_12.6.r12.6/compiler.35059454_0
+```
+
+### Make File Considerations
+Within the make file we set CUDA flags. All variables except `-arch=sm_75` you can ignore.
+
+This variable defines the ___minimum architechture___ you can use when executing. `sm_75` sets this minimum to an _RTX 2060_. This is resultant from [differing inter-architecture capabilites.](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities) If your card is $>= RTX 2060$ you're fine; otherwise, set this variable to a to a value within [your hardware's capabilities](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities).
+
+#### Lastly,
+Cuda is an odd way of programming, with CUDA kernel code being written alongside regular c++ code magically linked without interference between two compilers. The basics are easy but this is certainly a rabbit hole, I'd strongly advise you read/watch any source material you can, and always refer back to the [documentation for CUDA programming](https://docs.nvidia.com/cuda/cuda-c-programming-guide/). I also found [this video](https://www.youtube.com/watch?v=GetaI7KhbzM&t=87s) as a decent overview.
+
+
+Now we're set!
+
 
 
 
