@@ -115,6 +115,15 @@ Cuda compilation tools, release 12.6, V12.6.85
 Build cuda_12.6.r12.6/compiler.35059454_0
 ```
 
+### Make File Considerations
+Within the make file we set CUDA flags. All variables except `-arch=sm_75` you can ignore.
+
+This variable defines the ___minimum architechture___ you can use when executing. `sm_75` sets this minimum to an _RTX 2060_. This is resultant from [differing inter-architecture capabilites.](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities) If your card is $>= RTX 2060$ you're fine; otherwise, set this variable to a to a value within [your hardware's capabilities](https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#compute-capabilities).
+
+#### Lastly,
+Cuda is an odd way of programming, with CUDA kernel code being written alongside regular c++ code magically linked without interference between two compilers. The basics are easy but this is certainly a rabbit hole, I'd strongly advise you read/watch any source material you can, and always refer back to the [documentation for CUDA programming](https://docs.nvidia.com/cuda/cuda-c-programming-guide/). I also found [this video](https://www.youtube.com/watch?v=GetaI7KhbzM&t=87s) as a decent overview.
+
+
 Now we're set!
 
 
