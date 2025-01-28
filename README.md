@@ -1,6 +1,6 @@
 # Repository for SJSU CMPE 195 __Branch Prediction__ Capstone project.
 
-Description of the project goes here
+Novel Branch Predictor research. We review the efficacy of Transformers and Structured State-Space models for use in CPU Branch Prediction.  
 
 ## Contributors
 Nick
