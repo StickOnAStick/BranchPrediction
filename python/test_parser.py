@@ -249,7 +249,7 @@ def create_learning_graph(trace,ittr):
 
 
 
-def display_graph(input):
+def display_graph(input, warmup, test):
     print("Current Directory:", os.getcwd())
 
     # Find relevant CSV files
@@ -299,6 +299,8 @@ def display_graph(input):
     # Label axes
     plt.xlabel('Trace Benchmarks', fontweight='bold', fontsize=15)
     plt.ylabel('Branch Prediction Accuracy', fontweight='bold', fontsize=15)
+    plt.title('Branch prediction accuracy per test\n warmup instructions: ' + str(warmup) + '\n sim instructions: ' + str(test))
+
 
     # Add watermark
     fig.text(0.125, 0.875, 'Project Claros', fontsize=12,

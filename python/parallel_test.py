@@ -85,7 +85,7 @@ def main():
     create_csv()
 
     if (len(run_predictors) > 0):
-        display_graph(run_predictors)
+        display_graph(run_predictors,warmup_instructions,simulated_instructions)
 
 
 def parse_args():

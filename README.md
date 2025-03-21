@@ -124,11 +124,14 @@ This variable defines the ___minimum architechture___ you can use when executing
 Cuda is an odd way of programming, with CUDA kernel code being written alongside regular c++ code magically linked without interference between two compilers. The basics are easy but this is certainly a rabbit hole, I'd strongly advise you read/watch any source material you can, and always refer back to the [documentation for CUDA programming](https://docs.nvidia.com/cuda/cuda-c-programming-guide/). I also found [this video](https://www.youtube.com/watch?v=GetaI7KhbzM&t=87s) as a decent overview.
 
 ## Install for LIBTORCH 
-1. Follow instructions from https://pytorch.org/cppdocs/installing.html
-2. Edit the path variable named TORCH_DIR in the ChampSim/Makefile to your libtorch path 
-3. Use the following command, export LD_LIBRARY_PATH=/path/to/your/libtorch/lib:$LD_LIBRARY_PATH
-4. A large file named something like: libtorch-cxx11-abi-shared-with-deps-2.0.1+cu117
-should appear in your local bash. 
+1.  Follow instructions from https://pytorch.org/cppdocs/installing.html
+2.  Edit the path variable named TORCH_DIR in the ChampSim/Makefile to your libtorch path 
+3.  in terminal do cd to get to home directory
+4.  run nano .bashrc into command line
+5.  add the following command to the very end of the file you just opened: export LD_LIBRARY_PATH=/path/to/your/libtorch/lib:$LD_LIBRARY_PATH, 
+    make sure to edit the path to your libtorch path
+6.  save and close file, then run the command source .bashrc to refresh the bashrc file 
+7.  A large file named something like: libtorch-cxx11-abi-shared-with-deps-2.0.1+cu117 should appear in your local bash. 
 
 Now we're set!
 
@@ -208,3 +211,4 @@ __ALSO:__ If you're using Ubuntu >= 22.04 you'll need to install _libxcb-cursor_
 ```bash
 sudo apt install libxcb-cursor0
 ```  
+
