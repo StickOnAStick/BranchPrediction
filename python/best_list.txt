@@ -1,0 +1,133 @@
+Best list from runs 
+100000 | 100000
+64k
+256k
+1024k 
+
+
+
+50000 | 50000
+[evaluate] Config -> n=17, sizes=[4096, 32768, 32768, 128, 2048, 8192, 8192, 32768, 32768, 2048, 512, 8192, 1024, 512, 512, 512, 512], bits=[8, 4, 8, 1, 4, 2, 1, 8, 4, 12, 12, 2, 1, 12, 12, 4, 1], start_hist=2, alpha=1.442, GH_bits=8, IP_bits=4, PATH_bits=24, PATH_reg=4, hidden=12, dropout=0.236, lr=0.001095
+  overall footprint:       998820 bits (124852 bytes)
+
+[evaluate] Accuracy=95.6411, Adjusted fitness=95.6410
+
+[evaluate] Config -> n=14, sizes=[8192, 16384, 16384, 16384, 16384, 256, 8192, 32768, 512, 16384, 16384, 512, 8192, 4096], bits=[4, 8, 2, 8, 2, 4, 8, 8, 12, 2, 8, 8, 4, 12], start_hist=3, alpha=1.498, GH_bits=12, IP_bits=24, PATH_bits=20, PATH_reg=64, hidden=12, dropout=0.027, lr=0.001724
+  overall footprint:       1020472 bits (127559 bytes)
+
+[evaluate] Accuracy=95.5838, Adjusted fitness=95.5838
+
+[evaluate] Config -> n=14, sizes=[16384, 32768, 1024, 32768, 32768, 32768, 16384, 4096, 1024, 32768, 16384, 512, 8192, 256], bits=[8, 8, 2, 1, 4, 8, 2, 2, 4, 1, 4, 1, 1, 4], start_hist=3, alpha=1.436, GH_bits=4, IP_bits=8, PATH_bits=16, PATH_reg=8, hidden=12, dropout=0.163, lr=0.000937
+  overall footprint:       1046044 bits (130755 bytes)
+
+[evaluate] Accuracy=95.6021, Adjusted fitness=95.6020
+
+100000|100000
+256k 
+Best config: fit=96.3418, params=(8, (8192, 2048, 16384, 32768, 256, 32768, 8192, 8192), (5, 11, 3, 1, 7, 1, 1, 4), 6, 1.6333663794214717, 20, 8, 8, 16, (10, 5), 0.1255992802714152, 0.0010190119894189337)
+[evaluate] Config -> n=8, sizes=[4096, 256, 8192, 8192, 1024, 2048, 32768, 16384], bits=[8, 4, 4, 8, 8, 8, 1, 2], start_hist=2, alpha=1.518, GH_bits=20, IP_bits=24, PATH_bits=16, PATH_reg=4, hidden=8, dropout=0.174, lr=0.001175
+  overall footprint:       254268 bits (31783 bytes)
+
+[evaluate] Accuracy=95.4685, Adjusted fitness=95.4684
+
+[evaluate] Config -> n=10, sizes=[4096, 128, 8192, 2048, 4096, 2048, 16384, 2048, 32768, 256], bits=[12, 4, 4, 4, 2, 2, 2, 8, 2, 4], start_hist=3, alpha=1.408, GH_bits=4, IP_bits=24, PATH_bits=20, PATH_reg=4, hidden=8, dropout=0.197, lr=0.000824
+  overall footprint:       256304 bits (32038 bytes)
+
+[evaluate] Accuracy=95.4408, Adjusted fitness=95.4407
+
+[evaluate] Config -> n=8, sizes=[4096, 256, 8192, 8192, 1024, 2048, 32768, 16384], bits=[8, 4, 4, 8, 8, 8, 1, 2], start_hist=2, alpha=1.516, GH_bits=20, IP_bits=24, PATH_bits=16, PATH_reg=4, hidden=8, dropout=0.173, lr=0.001185
+  overall footprint:       254268 bits (31783 bytes)
+
+[evaluate] Accuracy=95.4719, Adjusted fitness=95.4719
+
+250000 | 250000
+
+    256kb
+[evaluate] Config -> n=8, sizes=[4096, 4096, 8192, 8192, 1024, 2048, 32768, 16384], bits=[8, 4, 4, 8, 8, 4, 1, 2], start_hist=2, alpha=1.508, GH_bits=20, IP_bits=24, PATH_bits=16, PATH_reg=8, hidden=8, dropout=0.175, lr=0.001181
+  overall footprint:       261692 bits (32711 bytes)
+
+[evaluate] Accuracy=95.9487, Adjusted fitness=95.9486
+
+
+    1024kb
+[evaluate] Config -> n=18, sizes=[4096, 16384, 16384, 4096, 4096, 4096, 32768, 16384, 8192, 32768, 2048, 32768, 16384, 1024, 2048, 16384, 1024, 1024], bits=[8, 12, 4, 4, 8, 8, 2, 2, 4, 4, 8, 2, 2, 4, 1, 8, 12, 4], start_hist=4, alpha=1.330, GH_bits=2, IP_bits=12, PATH_bits=4, PATH_reg=64, hidden=16, dropout=0.153, lr=0.001560
+  overall footprint:       1026834 bits (128354 bytes)
+
+[evaluate] Accuracy=96.2158, Adjusted fitness=96.2157
+
+[evaluate] Config -> n=15, sizes=[32768, 16384, 1024, 4096, 32768, 16384, 32768, 16384, 512, 32768, 16384, 32768, 16384, 2048, 32768], bits=[4, 4, 8, 8, 2, 8, 4, 4, 8, 1, 8, 1, 2, 8, 1], start_hist=2, alpha=1.350, GH_bits=20, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, dropout=0.164, lr=0.001514
+  overall footprint:       1013300 bits (126662 bytes)
+
+[evaluate] Accuracy=96.2233, Adjusted fitness=96.2233
+
+[evaluate] Config -> n=15, sizes=[32768, 16384, 1024, 4096, 32768, 8192, 32768, 16384, 512, 32768, 16384, 32768, 16384, 2048, 32768], bits=[4, 4, 8, 1, 2, 8, 4, 4, 8, 1, 8, 1, 8, 8, 1], start_hist=2, alpha=1.350, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, dropout=0.164, lr=0.001514
+  overall footprint:       1017378 bits (127172 bytes)
+
+[evaluate] Accuracy=96.2268, Adjusted fitness=96.2267
+
+[evaluate] Config -> n=15, sizes=[32768, 16384, 1024, 256, 32768, 8192, 32768, 16384, 4096, 32768, 16384, 16384, 16384, 2048, 32768], bits=[2, 4, 8, 2, 2, 12, 4, 4, 8, 1, 8, 1, 8, 8, 1], start_hist=2, alpha=1.347, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, dropout=0.094, lr=0.000704
+  overall footprint:       993314 bits (124164 bytes)
+
+[evaluate] Accuracy=96.2515, Adjusted fitness=96.2514
+
+[evaluate] Config -> n=15, sizes=[128, 1024, 8192, 4096, 32768, 8192, 32768, 16384, 4096, 32768, 16384, 32768, 16384, 2048, 32768], bits=[12, 4, 8, 1, 2, 8, 4, 4, 8, 1, 8, 4, 8, 8, 1], start_hist=2, alpha=1.431, GH_bits=20, IP_bits=12, PATH_bits=20, PATH_reg=32, hidden=16, dropout=0.100, lr=0.001310
+  overall footprint:       1012276 bits (126534 bytes)
+
+[evaluate] Accuracy=96.2714, Adjusted fitness=96.2713
+
+250000 | 500000
+
+[evaluate] Config -> n=18, sizes=[8192, 4096, 256, 8192, 4096, 32768, 512, 16384, 1024, 16384, 32768, 512, 32768, 4096, 8192, 1024, 512, 32768], bits=[8, 8, 2, 8, 1, 4, 8, 8, 8, 2, 2, 12, 1, 8, 4, 2, 2, 8], start_hist=3, alpha=1.294, GH_bits=12, IP_bits=8, PATH_bits=16, PATH_reg=8, hidden=12, dropout=0.041, lr=0.001390
+  overall footprint:       998948 bits (124868 bytes)
+
+[evaluate] Accuracy=95.9189, Adjusted fitness=95.9188
+
+[evaluate] Config -> n=16, sizes=[4096, 16384, 32768, 1024, 32768, 1024, 1024, 16384, 2048, 32768, 16384, 32768, 4096, 16384, 4096, 16384], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 2, 2, 2, 12, 4, 2, 4], start_hist=4, alpha=1.314, GH_bits=4, IP_bits=12, PATH_bits=20, PATH_reg=4, hidden=12, dropout=0.185, lr=0.001434
+  overall footprint:       1019684 bits (127460 bytes)
+
+[evaluate] Accuracy=95.9280, Adjusted fitness=95.9279
+
+[evaluate] Config -> n=18, sizes=[2048, 4096, 8192, 8192, 16384, 16384, 8192, 16384, 512, 16384, 32768, 4096, 8192, 4096, 16384, 16384, 8192, 128], bits=[8, 8, 2, 2, 2, 2, 8, 8, 4, 4, 8, 1, 4, 12, 8, 2, 2, 2], start_hist=3, alpha=1.285, GH_bits=8, IP_bits=12, PATH_bits=16, PATH_reg=64, hidden=12, dropout=0.107, lr=0.000689
+  overall footprint:       1031972 bits (128996 bytes)
+
+[evaluate] Accuracy=95.9283, Adjusted fitness=95.9282
+
+[evaluate] Config -> n=18, sizes=[8192, 32768, 256, 8192, 16384, 32768, 512, 16384, 512, 16384, 32768, 512, 512, 4096, 8192, 32768, 8192, 512], bits=[8, 8, 4, 8, 1, 4, 8, 8, 8, 2, 2, 1, 4, 12, 4, 2, 2, 8], start_hist=5, alpha=1.356, GH_bits=12, IP_bits=8, PATH_bits=16, PATH_reg=128, hidden=12, dropout=0.117, lr=0.001331
+  overall footprint:       1045540 bits (130692 bytes)
+
+[evaluate] Accuracy=95.9298, Adjusted fitness=95.9297
+
+[evaluate] Config -> n=16, sizes=[4096, 16384, 32768, 1024, 32768, 1024, 1024, 16384, 2048, 32768, 32768, 32768, 4096, 256, 32768, 2048], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 2, 2, 2, 12, 8, 2, 4], start_hist=4, alpha=1.314, GH_bits=4, IP_bits=12, PATH_bits=20, PATH_reg=4, hidden=12, dropout=0.185, lr=0.000826
+  overall footprint:       988964 bits (123620 bytes)
+
+[evaluate] Accuracy=95.9351, Adjusted fitness=95.9350
+
+[evaluate] Config -> n=17, sizes=[256, 16384, 8192, 32768, 16384, 16384, 8192, 16384, 8192, 16384, 512, 8192, 256, 4096, 16384, 1024, 8192], bits=[8, 12, 8, 4, 4, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 2], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=4, hidden=16, dropout=0.121, lr=0.000925
+  overall footprint:       956202 bits (119525 bytes)
+
+[evaluate] Accuracy=95.9375, Adjusted fitness=95.9375
+
+[evaluate] Config -> n=17, sizes=[4096, 16384, 32768, 32768, 16384, 4096, 1024, 16384, 128, 32768, 32768, 32768, 1024, 256, 32768, 2048, 8192], bits=[8, 4, 4, 4, 8, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 12], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=16, hidden=16, dropout=0.154, lr=0.001093
+  overall footprint:       1039914 bits (129989 bytes)
+
+[evaluate] Accuracy=95.9397, Adjusted fitness=95.9396
+
+[evaluate] Config -> n=18, sizes=[8192, 4096, 256, 8192, 32768, 32768, 512, 16384, 1024, 16384, 32768, 512, 32768, 4096, 8192, 1024, 1024, 32768], bits=[8, 8, 2, 8, 1, 2, 8, 8, 8, 2, 2, 12, 1, 8, 4, 2, 2, 8], start_hist=3, alpha=1.294, GH_bits=12, IP_bits=20, PATH_bits=16, PATH_reg=8, hidden=12, dropout=0.048, lr=0.001390
+  overall footprint:       963120 bits (120390 bytes)
+
+[evaluate] Accuracy=95.9401, Adjusted fitness=95.9400
+
+[evaluate] Config -> n=18, sizes=[8192, 16384, 8192, 8192, 16384, 16384, 128, 16384, 512, 16384, 32768, 8192, 512, 4096, 4096, 256, 8192, 2048], bits=[4, 8, 8, 8, 1, 4, 8, 8, 8, 2, 8, 2, 4, 12, 8, 2, 2, 8], start_hist=3, alpha=1.331, GH_bits=24, IP_bits=12, PATH_bits=24, PATH_reg=64, hidden=12, dropout=0.145, lr=0.001277
+  overall footprint:       1033276 bits (129159 bytes)
+
+[evaluate] Accuracy=95.9452, Adjusted fitness=95.9451
+
+[evaluate] Config -> n=18, sizes=[2048, 16384, 8192, 8192, 16384, 16384, 32768, 16384, 1024, 8192, 32768, 8192, 4096, 4096, 512, 1024, 256, 32768], bits=[12, 8, 8, 8, 2, 4, 1, 8, 4, 2, 8, 1, 2, 12, 12, 1, 2, 1], start_hist=5, alpha=1.266, GH_bits=24, IP_bits=20, PATH_bits=16, PATH_reg=64, hidden=12, dropout=0.181, lr=0.000989
+  overall footprint:       1029180 bits (128647 bytes)
+
+[evaluate] Accuracy=95.9534, Adjusted fitness=95.9533
+
+[evaluate] Config -> n=17, sizes=[8192, 4096, 16384, 2048, 2048, 256, 32768, 512, 16384, 8192, 16384, 32768, 32768, 2048, 32768, 128, 2048], bits=[8, 4, 8, 2, 2, 12, 8, 8, 12, 1, 4, 2, 2, 12, 1, 2, 2], start_hist=2, alpha=1.347, GH_bits=12, IP_bits=12, PATH_bits=24, PATH_reg=4, hidden=12, dropout=0.112, lr=0.001554
+  overall footprint:       1037360 bits (129670 bytes)
+
+[evaluate] Accuracy=95.7109, Adjusted fitness=95.7108
