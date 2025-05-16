@@ -22,44 +22,46 @@ assert PREDICTOR_PATH.is_dir()
 
 tage_tables = 0
 min_size = 32000
-def delete_make():
-    # with open('_configuration.mk', "w") as config_file:
-    #     config_file.seek(0)
-    #     config_file.write("")
-    #     config_file.close()
-    os.chdir('.csconfig')
-    files = os.listdir()
-    for i in files:
-        print("folder: " + i)
-        for j in os.listdir(i):
-            if os.path.isdir(i+"/"+j):
-               # print("    folder: " + j) 
-                for k in os.listdir(i+"/"+j):
-                    if os.path.isdir(i+"/"+j +"/"+k):
-                       # print("         folder:" + k)
-                        for l in os.listdir(i+"/"+j +"/"+k):
-                            if os.path.isdir(i+"/"+j +"/"+k + "/" + l):
-                                a =2 
-                            #    print("             folder:" + l)
-                            else:
-                        #        print("             file:" + l)
-                                os.remove(i+"/"+j +"/"+k + "/" + l)
-                    else:
-                   #     print("         file:" + k)
-                        os.remove(i+"/"+j +"/"+k)
-            else: 
-              #  print("    file: " + j)
-                os.remove(i+"/"+j)
-    for i in files:
-       # print("folder: " + i)
-        for j in os.listdir(i):
-            for k in os.listdir(i+"/"+j):
-                for l in os.listdir(i+"/"+j +"/"+k):
-                    os.rmdir(i+"/"+j +"/"+k + "/" +l)
-                os.rmdir(i+"/"+j +"/"+k)
-            os.rmdir(i+"/"+j)
-        os.rmdir(i)
-    os.chdir('..')
+# Make sure to roll for constitution before looking at this commented out code, 
+# this is 
+# def delete_make():
+#     # with open('_configuration.mk', "w") as config_file:
+#     #     config_file.seek(0)
+#     #     config_file.write("")
+#     #     config_file.close()
+#     os.chdir('.csconfig')
+#     files = os.listdir()
+#     for i in files:
+#         print("folder: " + i)
+#         for j in os.listdir(i):
+#             if os.path.isdir(i+"/"+j):
+#                # print("    folder: " + j) 
+#                 for k in os.listdir(i+"/"+j):
+#                     if os.path.isdir(i+"/"+j +"/"+k):
+#                        # print("         folder:" + k)
+#                         for l in os.listdir(i+"/"+j +"/"+k):
+#                             if os.path.isdir(i+"/"+j +"/"+k + "/" + l):
+#                                 a =2 
+#                             #    print("             folder:" + l)
+#                             else:
+#                         #        print("             file:" + l)
+#                                 os.remove(i+"/"+j +"/"+k + "/" + l)
+#                     else:
+#                    #     print("         file:" + k)
+#                         os.remove(i+"/"+j +"/"+k)
+#             else: 
+#               #  print("    file: " + j)
+#                 os.remove(i+"/"+j)
+#     for i in files:
+#        # print("folder: " + i)
+#         for j in os.listdir(i):
+#             for k in os.listdir(i+"/"+j):
+#                 for l in os.listdir(i+"/"+j +"/"+k):
+#                     os.rmdir(i+"/"+j +"/"+k + "/" +l)
+#                 os.rmdir(i+"/"+j +"/"+k)
+#             os.rmdir(i+"/"+j)
+#         os.rmdir(i)
+#     os.chdir('..')
 
 # this is literally copy and pasted from gemini but it works 
 def replace_from_position(string, old, new, position):

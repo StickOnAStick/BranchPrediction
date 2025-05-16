@@ -9,7 +9,7 @@ Note for all python tests:
 
 Testing Files: 
     parallel_test.py:
-    Description:
+        Description:
             This script automates running and compiling ChampSim branch predictors. Key functionalities include:
 
                 1. Command-Line Execution – Runs simulations for specified predictors and traces, handling command-line arguments.
@@ -43,7 +43,7 @@ Testing Files:
     NN_Trainer.py:
         Description: 
             This script is a "parallel test" 
-            (Comments from John: it's only parallel in the sense that you could train multiple models at the same time, however the tests for each model are run sequentially)
+            (Comments from John: it's only parallel in the sense that you could train multiple models at the same time, the tests for each model are run sequentially)
             launcher for branch predictor evaluation in ChampSim. It automates the process of running simulations with different branch predictors by:
 
             1. Managing Predictors: Determines which predictors need to be compiled and recompiles them if necessary.
@@ -58,8 +58,12 @@ Testing Files:
         
         Commands:
             python3 NN_trainer.py --test_itt 20 --warmup_instructions 5000 --simulation_instructions 100000 --predictors Transformer_NN --recompile Transformer_NN
-            test_itt will run the tests N times, each test will have that number of warmup instructions and simulation instrucitons.
+            test_itt will run the tests N times, each individual trace test will have that number of warmup instructions and simulation instrucitons,
+            the total number of instructions will look something like: total_#_of_instr = test_itt * #_of_trace_test * warmup_instr * sim_instr
             The tests will be run in a random order for each test itteration
+
+
+
 
 Helper Files or depricated: 
     test_parser.py 

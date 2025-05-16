@@ -1,14 +1,18 @@
+import matplotlib
+matplotlib.use("TkAgg")       # or "Qt5Agg" if you have PyQt5 installed
+import matplotlib.pyplot as plt
+print("Backend in use:", matplotlib.get_backend())
 import pandas as pd
 import numpy as np
 from recompiler import find_2_pow
 import warnings
 import datetime
-import matplotlib.pyplot as plt
-import matplotlib
 import os
+import re
 import json
 import pathlib
 from scipy.interpolate import make_interp_spline, pchip
+
 
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -106,29 +110,25 @@ def create_csv():
     # print("Created file:" + str(CSV_PATH) +"/"+ log[(len(str(CSV_PATH)) -2):(len(log) - len(".json"))] +".csv")
 
 
-def display_size_graph(predictors,size):
+def display_size_graph(predictors, size):
     file_list = os.listdir(CSV_PATH)
-    csvlist = []
-    predictor_list = [0,0,0]
     predictor_set = []
-
+    predictor_list = [0, 0, 0]
     # create a list object for each csv file,
-    # it contains the predictor type, predictor size, and average prediction acurracy for the tests that
+    # it contains the predictor type, predictor size, and average prediction accuracy for the tests
     for file in file_list:
-        branch_csvs = pd.read_csv(str(CSV_PATH) + "/" + file)
-        size_set = set(branch_csvs["Size"]) 
-        number_of_test_per_size = int(len(branch_csvs.index) / len(size_set)) 
-        predictor_list[0] = file[:len(file)-len(".cvs")]
-        count = 0
-        for size in size_set:
-            count += 1
-            predictor_list[1] = size
-            for i in range(0,len(branch_csvs.index)):
-                if size == branch_csvs["Size"][i]:
-                    predictor_list[2]+= branch_csvs["Branch Prediction Accuracy"][i]
+        branch_csvs = pd.read_csv(str(CSV_PATH / file))
+        size_set = set(branch_csvs["Size"])
+        number_of_test_per_size = int(len(branch_csvs.index) / len(size_set))
+        predictor_list[0] = file[:-len(".csv")]
+        for size_val in size_set:
+            predictor_list[1] = size_val
+            predictor_list[2] = 0
+            for i in range(0, len(branch_csvs.index)):
+                if size_val == branch_csvs["Size"][i]:
+                    predictor_list[2] += branch_csvs["Branch Prediction Accuracy"][i]
             predictor_list[2] = predictor_list[2] / number_of_test_per_size
             predictor_set.append(predictor_list[:])
-            predictor_list[2] = 0
     
     size_independent_predictors = []
     for predictor in predictors:
@@ -143,20 +143,15 @@ def display_size_graph(predictors,size):
                 y_axis.append(pl[2])
         x_axis = np.array(x_axis)
         y_axis = np.array(y_axis)
-
-        # if you want an interped graph
-        # X_ = np.linspace(0, np.max(x_axis), 5000)
-        # Y_ = pchip(x_axis,y_axis)
-        # plt.plot(X_, Y_(X_), label= ps)
-        
-        # if you want no interp
         plt.xscale('log', base=2)
-        plt.plot(x_axis,y_axis, label = ps)
+        plt.plot(x_axis, y_axis, label=ps)
     
     plt.legend()
     plt.ylabel("Prediction Accuracy")
     plt.xlabel("Predictor size (bits)")
-    plt.show(block=True)
+    plt.show()
+    input("Press Enter to close the size graph...")
+
 def asort(val):
     return val[1]
     # input: list of names of the predictors you want graphed 
@@ -200,11 +195,10 @@ def display_speed_graph(traces):
     plt.legend()
     plt.ylabel("Prediction Accuracy")
     plt.xlabel("Instruction cycles")
-    plt.show(block=True)
+    plt.show()
 
 
 def create_learning_graph(trace,ittr):
-    matplotlib.use("Agg")  # Change to "Qt5Agg" if you need a GUI
     plt.ion()  # Enable interactive mode to avoid Tkinter errors
     file_list = os.listdir(str(SPEED_PATH))
 
@@ -247,80 +241,238 @@ def create_learning_graph(trace,ittr):
 
     plt.close("all")  # Ensure all figures are properly closed
 
+def display_table_graph(csv_folder):
+    # List all CSV files in the given folder
+    file_list = os.listdir(csv_folder)
+    csv_files = [f for f in file_list if f.endswith('.csv')]
+    print("Found CSV Files:", csv_files)
+    if not csv_files:
+        print("No CSV files found in the folder.")
+        return
+
+    # Dictionary to store results grouped by table number.
+    # results[table] is a dictionary where keys are (history_size, bits) and values are avg prediction accuracy.
+    results = {}
+
+    # Process each CSV file
+    for filename in csv_files:
+        # Expecting filenames like "Attention_0_128_2.csv"
+        name_no_ext = filename.replace('.csv', '')
+        parts = name_no_ext.split('_')
+        if len(parts) < 4:
+            print(f"Skipping {filename} (filename does not match expected pattern)")
+            continue
+
+        try:
+            # Assume pattern: <prefix>_<table>_<local_history_size>_<bits>
+            table = parts[-3]  # table number as string
+            history_size = int(parts[-2])
+            bits = int(parts[-1])
+        except Exception as e:
+            print(f"Error parsing {filename}: {e}")
+            continue
+
+        # Read CSV file
+        full_path = os.path.join(csv_folder, filename)
+        df = pd.read_csv(full_path)
+        if "Branch Prediction Accuracy" not in df.columns:
+            print(f"Warning: Skipping {filename} (Missing 'Branch Prediction Accuracy' column)")
+            continue
+
+        # Compute the average prediction accuracy from all tests in the CSV file
+        avg_accuracy = df["Branch Prediction Accuracy"].mean()
+        
+        # Use a regular dict to group the results by table number
+        if table not in results:
+            results[table] = {}
+        results[table][(history_size, bits)] = avg_accuracy
+
+    # For each table number, build and display a heatmap
+    for table, data in results.items():
+        # Get all unique local history sizes (x axis) and bits (y axis)
+        history_sizes = sorted(set(x for (x, y) in data.keys()))
+        bits_values = sorted(set(y for (x, y) in data.keys()))
+        
+        # Initialize a matrix with NaNs to hold the average accuracy values
+        heatmap_matrix = np.full((len(bits_values), len(history_sizes)), np.nan)
+        
+        # Fill the matrix: rows correspond to bits, columns to history_sizes
+        for (h_size, bit), accuracy in data.items():
+            x_index = history_sizes.index(h_size)
+            y_index = bits_values.index(bit)
+            heatmap_matrix[y_index, x_index] = accuracy
+
+        # Create the heatmap figure
+        fig, ax = plt.subplots(figsize=(8, 6))
+        cax = ax.imshow(heatmap_matrix, aspect='auto', origin='lower', cmap='viridis')
+        ax.set_title(f"Heatmap for Table {table}")
+        ax.set_xlabel("Local History Table Size")
+        ax.set_ylabel("Bits")
+        
+        # Set x and y ticks with the corresponding values
+        ax.set_xticks(np.arange(len(history_sizes)))
+        ax.set_xticklabels(history_sizes)
+        ax.set_yticks(np.arange(len(bits_values)))
+        ax.set_yticklabels(bits_values)
+        
+        # Add text annotations for each cell with a valid average accuracy value
+        for i in range(heatmap_matrix.shape[0]):
+            for j in range(heatmap_matrix.shape[1]):
+                value = heatmap_matrix[i, j]
+                if not np.isnan(value):
+                    ax.text(j, i, f'{value:.2f}', ha='center', va='center', 
+                            fontsize=8, color='white', 
+                            bbox=dict(facecolor='black', edgecolor='none', alpha=0.7))
+        
+        # Add a colorbar to indicate average branch prediction accuracy
+        fig.colorbar(cax, ax=ax, label='Average Branch Prediction Accuracy')
+        plt.show()
 
 
-def display_graph(input, warmup, test):
+def display_grid_search_graph(csv_folder):
+    """
+    Displays a heatmap for grid search results based on files with the pattern:
+    Attention_<dropout>_<learning_rate>.csv
+
+    The function reads the file to compute the average branch prediction accuracy, then builds
+    a heatmap with learning rate on the x-axis and dropout on the y-axis.
+    """
+    file_list = os.listdir(csv_folder)
+
+    # Match files like Attention_0.1_0.0001.csv
+    pattern = re.compile(r'^Attention_(?P<dropout>[\d\.eE+-]+)_(?P<lr>[\d\.eE+-]+)\.csv$')
+    matching_files = [f for f in file_list if pattern.match(f)]
+    print("Found matching files:", matching_files)
+    if not matching_files:
+        print("No matching files found in the folder.")
+        return
+
+    results = {}
+
+    for filename in matching_files:
+        match = pattern.match(filename)
+        if not match:
+            continue
+
+        try:
+            dropout = float(match.group("dropout"))
+            lr = float(match.group("lr"))
+        except Exception as e:
+            print(f"Error parsing numbers in {filename}: {e}")
+            continue
+
+        full_path = os.path.join(csv_folder, filename)
+        try:
+            df = pd.read_csv(full_path)
+        except Exception as e:
+            print(f"Error reading {filename}: {e}")
+            continue
+
+        if "Branch Prediction Accuracy" not in df.columns:
+            print(f"Warning: Skipping {filename} (Missing 'Branch Prediction Accuracy' column)")
+            continue
+
+        avg_accuracy = df["Branch Prediction Accuracy"].mean()
+        results[(dropout, lr)] = avg_accuracy
+
+    if not results:
+        print("No valid data to display.")
+        return
+
+    dropout_vals = sorted(set(d for (d, _) in results.keys()))
+    lr_vals = sorted(set(lr for (_, lr) in results.keys()))
+
+    heatmap_matrix = np.full((len(dropout_vals), len(lr_vals)), np.nan)
+
+    for (dropout, lr), accuracy in results.items():
+        x_index = lr_vals.index(lr)
+        y_index = dropout_vals.index(dropout)
+        heatmap_matrix[y_index, x_index] = accuracy
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    cax = ax.imshow(heatmap_matrix, aspect='auto', origin='lower', cmap='viridis')
+    ax.set_title("Grid Search Heatmap for Dropout Rate and Learning Rate")
+    ax.set_xlabel("Learning Rate")
+    ax.set_ylabel("Dropout Rate")
+
+    ax.set_xticks(np.arange(len(lr_vals)))
+    ax.set_xticklabels([f"{lr:.4g}" for lr in lr_vals])
+    ax.set_yticks(np.arange(len(dropout_vals)))
+    ax.set_yticklabels([f"{d:.2f}" for d in dropout_vals])
+
+    for i in range(heatmap_matrix.shape[0]):
+        for j in range(heatmap_matrix.shape[1]):
+            value = heatmap_matrix[i, j]
+            if not np.isnan(value):
+                ax.text(j, i, f'{value:.2f}', ha='center', va='center',
+                        fontsize=8, color='white',
+                        bbox=dict(facecolor='black', edgecolor='none', alpha=0.7))
+
+    fig.colorbar(cax, ax=ax, label='Average Branch Prediction Accuracy')
+    plt.tight_layout()
+    plt.show()
+
+
+def display_graph(input_str, warmup, test):
     print("Current Directory:", os.getcwd())
-
-    # Find relevant CSV files
     file_list = os.listdir(str(CSV_PATH))
-    csvlist = [i for i in file_list if any(j in i for j in input) and i.endswith('.csv')]
-
-    # Sort CSVs for consistent ordering
-    csvlist.sort(key=str.casefold)
-    print("Sorted CSV List:", csvlist)
-
-    if not csvlist:
+    # Select CSV files whose name contains any predictor from input_str
+    csvlist = [f for f in file_list if any(p in f for p in input_str) and f.endswith('.csv')]
+    
+    # Order the CSV list based on the order the predictors appear in input_str:
+    ordered_csvlist = []
+    for predictor in input_str:
+        for f in csvlist:
+            if predictor in f and f not in ordered_csvlist:
+                ordered_csvlist.append(f)
+                
+    if not ordered_csvlist:
         print("No matching CSV files found.")
         return
 
-    # Read all CSVs into a dictionary, ensuring consistent test order
+    # Create data frames in order of the predictors from the command prompt
     data_frames = {}
-    for filename in csvlist:
+    for filename in ordered_csvlist:
         df = pd.read_csv(os.path.join(str(CSV_PATH), filename), index_col=0)
-        if "Test" not in df.columns or "Branch Prediction Accuracy" not in df.columns:
+        # Verify necessary columns are present for calculating IPC
+        if "Test" not in df.columns or "instructions" not in df.columns or "cycles" not in df.columns:
             print(f"Warning: Skipping {filename} (Missing necessary columns)")
             continue
-        df = df.sort_values(by="Test")  # Ensure tests are sorted consistently
+        # Compute IPC as instructions divided by cycles and add as a new column
+        df["IPC_calculated"] = df["instructions"] / df["cycles"]
         data_frames[filename] = df
 
-    # Ensure all files have the same test order
-    all_tests = sorted(set().union(*(df["Test"] for df in data_frames.values())))
+    # Collect tests from all files and sort them alphabetically (for x-axis ordering)
+    all_tests = set()
+    for df in data_frames.values():
+        all_tests.update(df["Test"].tolist())
+    all_tests = sorted(all_tests, key=str.lower)
 
-    # Initialize the plot
     fig, ax = plt.subplots(figsize=(16, 9))
-    bar_width = 1 / (len(csvlist) + 1)  # Adjust bar width dynamically
-    x_positions = np.arange(len(all_tests))  # Fixed x positions for all tests
-
-    # Plot each dataset
+    bar_width = 1 / (len(ordered_csvlist) + 1)
+    x_positions = np.arange(len(all_tests))
     for count, (filename, df) in enumerate(data_frames.items()):
-        df = df.set_index("Test").reindex(all_tests)  # Align test names across all CSVs
-        BPA = df["Branch Prediction Accuracy"].values  # Get BPA values
-        
-        bar_offsets = x_positions + count * bar_width  # Adjust positions
-        bars = plt.bar(bar_offsets, BPA, width=bar_width, label=filename)
-
-        # Add text labels above bars
+        # Reindex based on the collected tests
+        df = df.set_index("Test").reindex(all_tests)
+        # Use the computed IPC values
+        ipc = df["IPC_calculated"].values
+        avg_ipc = np.nanmean(ipc)
+        label_text = f"{filename} (avg IPC: {avg_ipc:.2f})"
+        bar_offsets = x_positions + count * bar_width
+        bars = plt.bar(bar_offsets, ipc, width=bar_width, label=label_text)
         for bar in bars:
             height = bar.get_height()
-            if not np.isnan(height):  # Avoid labeling NaN values
-                plt.text(bar.get_x() + bar.get_width()/2, height, f'{height:.2f}', ha='center', va='bottom', fontsize=6)
-
-    # Label axes
+            if not np.isnan(height):
+                plt.text(bar.get_x() + bar.get_width()/2, height, f'{height:.2f}',
+                         ha='center', va='bottom', fontsize=6)
     plt.xlabel('Trace Benchmarks', fontweight='bold', fontsize=15)
-    plt.ylabel('Branch Prediction Accuracy', fontweight='bold', fontsize=15)
-    plt.title('Branch prediction accuracy per test\n warmup instructions: ' + str(warmup) + '\n sim instructions: ' + str(test))
-
-
-    # Add watermark
+    plt.ylabel('IPC (instructions / cycles)', fontweight='bold', fontsize=15)
+    plt.title(f'IPC per test\n warmup instructions: {warmup}\n sim instructions: {test}')
     fig.text(0.125, 0.875, 'Project Claros', fontsize=12,
              color='grey', ha='left', va='top', alpha=0.7)
-
-    # Set correct x-axis labels
-    plt.xticks(x_positions + (len(csvlist) - 1) * bar_width / 2, all_tests, rotation=30, ha="right")
-
-    plt.legend()
-    plt.show(block=True)
-
-#create_csv("ChampSim/python/Test_logs/bimodal1k.json")
-
-# for windows only
-# for i in os.listdir("champsim/python/Test logs"):
-#     create_csv("champsim/python/Test logs/"+ i)
-
-# display_size_graph(["bimodal1k","bimodal2k","bimodal4k","bimodal8k","bimodal16k","bimodal32k","bimodal64k","bimodal128k",
-#                    "gshare1k","gshare2k","gshare4k","gshare8k","gshare16k","gshare32k","gshare64k","gshare128k",
-#                    "global_history1k","global_history2k","global_history4k","global_history8k","global_history16k","global_history32k","global_history64k","global_history128k"],128)
-
-
-#,"bimodal256k","bimodal512k","bimodal1024k "gshare256k","gshare512k","gshare1024k","global_history256k","global_history512k","global_history1024k"
+    plt.xticks(x_positions + (len(ordered_csvlist) - 1) * bar_width / 2,
+               all_tests, rotation=30, ha="right")
+    plt.legend(loc='lower center', bbox_to_anchor=(0.5, 0.1), ncol=2)
+    plt.show(block=False)
+    input("Press Enter to close the graph...")
+    plt.close()

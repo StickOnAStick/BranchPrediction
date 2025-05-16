@@ -29,21 +29,26 @@ CUSTOM_SEED_STRINGS = [
 ]
 #1024k
 CUSTOM_SEED_STRINGS = [
-    "n=16, sizes=[4096, 2048, 32768, 2048, 32768, 8192, 32768, 16384, 4096, 4096, 32768, 32768, 4096, 128, 32768, 2048], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 12, 2, 2, 12, 2, 2, 8], start_hist=2, alpha=1.380, GH_bits=4, IP_bits=16, PATH_bits=2, PATH_reg=16, hidden=8, num_heads=4, dropout=0.052, lr=0.000931",
-    "n=18, sizes=[8192, 16384, 8192, 8192, 16384, 16384, 128, 16384, 512, 16384, 32768, 8192, 512, 4096, 4096, 256, 8192, 2048], bits=[4, 8, 8, 8, 1, 4, 8, 8, 8, 2, 8, 2, 4, 12, 8, 2, 2, 8], start_hist=3, alpha=1.331, GH_bits=24, IP_bits=12, PATH_bits=24, PATH_reg=64, hidden=12, num_heads=4, dropout=0.145, lr=0.001277",
-    "n=18, sizes=[8192, 4096, 256, 8192, 32768, 32768, 512, 16384, 1024, 16384, 32768, 512, 32768, 4096, 8192, 1024, 1024, 32768], bits=[8, 8, 2, 8, 1, 2, 8, 8, 8, 2, 2, 12, 1, 8, 4, 2, 2, 8], start_hist=3, alpha=1.294, GH_bits=12, IP_bits=20, PATH_bits=16, PATH_reg=8, hidden=12, num_heads=4, dropout=0.048, lr=0.001390",
-    "n=17, sizes=[4096, 16384, 32768, 32768, 16384, 4096, 1024, 16384, 128, 32768, 32768, 32768, 1024, 256, 32768, 2048, 8192], bits=[8, 4, 4, 4, 8, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 12], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=16, hidden=16, num_heads=4, dropout=0.154, lr=0.001093",
-    "n=17, sizes=[256, 16384, 8192, 32768, 16384, 16384, 8192, 16384, 8192, 16384, 512, 8192, 256, 4096, 16384, 1024, 8192], bits=[8, 12, 8, 4, 4, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 2], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=4, hidden=16, num_heads=4, dropout=0.121, lr=0.000925",
-    "n=15, sizes=[32768, 16384, 1024, 256, 32768, 8192, 32768, 16384, 4096, 32768, 16384, 16384, 16384, 2048, 32768], bits=[2, 4, 8, 2, 2, 12, 4, 4, 8, 1, 8, 1, 8, 8, 1], start_hist=2, alpha=1.347, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, num_heads=4, dropout=0.094, lr=0.000704",
-    "n=16, sizes=[4096, 16384, 32768, 1024, 32768, 1024, 1024, 16384, 2048, 32768, 32768, 32768, 4096, 256, 32768, 2048], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 2, 2, 2, 12, 8, 2, 4], start_hist=4, alpha=1.314, GH_bits=4, IP_bits=12, PATH_bits=20, PATH_reg=4, hidden=12, num_heads=4, dropout=0.185, lr=0.000826"
-    "n=16, sizes=[512, 4096, 16384, 8192, 1024, 32768, 256, 8192, 32768, 512, 512, 32768, 4096, 16384, 16384, 8192], bits=[8, 8, 1, 8, 8, 8, 2, 12, 1, 12, 2, 1, 2, 2, 12, 12], start_hist=2, alpha=1.397, GH_bits=2, IP_bits=20, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.234, lr=0.001281",
-    "n=10, sizes=[16384, 32768, 128, 8192, 32768, 256, 16384, 16384, 256, 32768], bits=[8, 12, 2, 4, 4, 12, 12, 2, 12, 1], start_hist=4, alpha=1.333, GH_bits=20, IP_bits=12, PATH_bits=4, PATH_reg=4, hidden=16, num_heads=4, dropout=0.125, lr=0.001702",
-    "n=18, sizes=[8192, 8192, 16384, 4096, 8192, 32768, 32768, 1024, 8192, 2048, 4096, 16384, 2048, 16384, 256, 2048, 32768, 4096], bits=[1, 1, 4, 1, 8, 2, 2, 12, 2, 4, 8, 8, 2, 4, 8, 8, 8, 2], start_hist=2, alpha=1.315, GH_bits=12, IP_bits=8, PATH_bits=4, PATH_reg=32, hidden=16, num_heads=4, dropout=0.184, lr=0.001607",
-    "n=10, sizes=[4096, 32768, 32768, 128, 2048, 8192, 8192, 32768, 32768, 2048], bits=[8, 8, 8, 8, 1, 2, 1, 8, 2, 4], start_hist=3, alpha=1.447, GH_bits=2, IP_bits=20, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.233, lr=0.000897",
-    "n=15, sizes=[4096, 16384, 1024, 128, 32768, 4096, 32768, 16384, 2048, 32768, 16384, 32768, 16384, 1024, 2048],bits=[8, 12, 8, 4, 8, 8, 2, 2, 8, 2, 8, 2, 1, 2, 2], start_hist=4, alpha=1.329, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, num_heads=4, dropout=0.158, lr=0.001567",
-    "n=17, sizes=[16384, 1024, 8192, 16384, 16384, 8192, 16384, 16384, 8192, 16384, 4096, 8192, 1024, 128, 16384, 1024, 512],bits=[8, 4, 8, 8, 2, 4, 8, 8, 8, 8, 8, 1, 1, 4, 2, 2, 1], start_hist=2, alpha=1.458, GH_bits=16, IP_bits=20, PATH_bits=12,  PATH_reg=16, hidden=12, num_heads=4, dropout=0.242, lr=0.000544",
-    "n=17, sizes=[4096, 32768, 32768, 128, 2048, 8192, 8192, 32768, 32768, 2048, 512, 8192, 1024, 512, 512, 512, 512], bits=[8, 4, 8, 1, 4, 2, 1, 8, 4, 12, 12, 2, 1, 12, 12, 4, 1], start_hist=2, alpha=1.442, GH_bits=8, IP_bits=4, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.236, lr=0.001095",
-    "n=14, sizes=[8192, 16384, 16384, 16384, 16384, 256, 8192, 32768, 512, 16384, 16384, 512, 8192, 4096], bits=[4, 8, 2, 8, 2, 4, 8, 8, 12, 2, 8, 8, 4, 12], start_hist=3, alpha=1.498, GH_bits=12, IP_bits=24, PATH_bits=20, PATH_reg=64, hidden=12, num_heads=4, dropout=0.027, lr=0.001724"
+    # "n=16, sizes=[4096, 2048, 32768, 2048, 32768, 8192, 32768, 16384, 4096, 4096, 32768, 32768, 4096, 128, 32768, 2048], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 12, 2, 2, 12, 2, 2, 8], start_hist=2, alpha=1.380, GH_bits=4, IP_bits=16, PATH_bits=2, PATH_reg=16, hidden=8, num_heads=4, dropout=0.052, lr=0.000931",
+    # "n=18, sizes=[8192, 16384, 8192, 8192, 16384, 16384, 128, 16384, 512, 16384, 32768, 8192, 512, 4096, 4096, 256, 8192, 2048], bits=[4, 8, 8, 8, 1, 4, 8, 8, 8, 2, 8, 2, 4, 12, 8, 2, 2, 8], start_hist=3, alpha=1.331, GH_bits=24, IP_bits=12, PATH_bits=24, PATH_reg=64, hidden=12, num_heads=4, dropout=0.145, lr=0.001277",
+    # "n=18, sizes=[8192, 4096, 256, 8192, 32768, 32768, 512, 16384, 1024, 16384, 32768, 512, 32768, 4096, 8192, 1024, 1024, 32768], bits=[8, 8, 2, 8, 1, 2, 8, 8, 8, 2, 2, 12, 1, 8, 4, 2, 2, 8], start_hist=3, alpha=1.294, GH_bits=12, IP_bits=20, PATH_bits=16, PATH_reg=8, hidden=12, num_heads=4, dropout=0.048, lr=0.001390",
+    # "n=17, sizes=[4096, 16384, 32768, 32768, 16384, 4096, 1024, 16384, 128, 32768, 32768, 32768, 1024, 256, 32768, 2048, 8192], bits=[8, 4, 4, 4, 8, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 12], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=16, hidden=16, num_heads=4, dropout=0.154, lr=0.001093",
+    # "n=17, sizes=[256, 16384, 8192, 32768, 16384, 16384, 8192, 16384, 8192, 16384, 512, 8192, 256, 4096, 16384, 1024, 8192], bits=[8, 12, 8, 4, 4, 8, 4, 1, 8, 2, 2, 2, 12, 8, 2, 4, 2], start_hist=4, alpha=1.337, GH_bits=2, IP_bits=20, PATH_bits=20, PATH_reg=4, hidden=16, num_heads=4, dropout=0.121, lr=0.000925",
+    # "n=15, sizes=[32768, 16384, 1024, 256, 32768, 8192, 32768, 16384, 4096, 32768, 16384, 16384, 16384, 2048, 32768], bits=[2, 4, 8, 2, 2, 12, 4, 4, 8, 1, 8, 1, 8, 8, 1], start_hist=2, alpha=1.347, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, num_heads=4, dropout=0.094, lr=0.000704",
+    # "n=16, sizes=[4096, 16384, 32768, 1024, 32768, 1024, 1024, 16384, 2048, 32768, 32768, 32768, 4096, 256, 32768, 2048], bits=[8, 4, 4, 4, 8, 8, 2, 4, 8, 2, 2, 2, 12, 8, 2, 4], start_hist=4, alpha=1.314, GH_bits=4, IP_bits=12, PATH_bits=20, PATH_reg=4, hidden=12, num_heads=4, dropout=0.185, lr=0.000826"
+    # "n=16, sizes=[512, 4096, 16384, 8192, 1024, 32768, 256, 8192, 32768, 512, 512, 32768, 4096, 16384, 16384, 8192], bits=[8, 8, 1, 8, 8, 8, 2, 12, 1, 12, 2, 1, 2, 2, 12, 12], start_hist=2, alpha=1.397, GH_bits=2, IP_bits=20, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.234, lr=0.001281",
+    # "n=10, sizes=[16384, 32768, 128, 8192, 32768, 256, 16384, 16384, 256, 32768], bits=[8, 12, 2, 4, 4, 12, 12, 2, 12, 1], start_hist=4, alpha=1.333, GH_bits=20, IP_bits=12, PATH_bits=4, PATH_reg=4, hidden=16, num_heads=4, dropout=0.125, lr=0.001702",
+    # "n=18, sizes=[8192, 8192, 16384, 4096, 8192, 32768, 32768, 1024, 8192, 2048, 4096, 16384, 2048, 16384, 256, 2048, 32768, 4096], bits=[1, 1, 4, 1, 8, 2, 2, 12, 2, 4, 8, 8, 2, 4, 8, 8, 8, 2], start_hist=2, alpha=1.315, GH_bits=12, IP_bits=8, PATH_bits=4, PATH_reg=32, hidden=16, num_heads=4, dropout=0.184, lr=0.001607",
+    # "n=10, sizes=[4096, 32768, 32768, 128, 2048, 8192, 8192, 32768, 32768, 2048], bits=[8, 8, 8, 8, 1, 2, 1, 8, 2, 4], start_hist=3, alpha=1.447, GH_bits=2, IP_bits=20, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.233, lr=0.000897",
+    # "n=15, sizes=[4096, 16384, 1024, 128, 32768, 4096, 32768, 16384, 2048, 32768, 16384, 32768, 16384, 1024, 2048],bits=[8, 12, 8, 4, 8, 8, 2, 2, 8, 2, 8, 2, 1, 2, 2], start_hist=4, alpha=1.329, GH_bits=2, IP_bits=12, PATH_bits=20, PATH_reg=8, hidden=16, num_heads=4, dropout=0.158, lr=0.001567",
+    # "n=17, sizes=[16384, 1024, 8192, 16384, 16384, 8192, 16384, 16384, 8192, 16384, 4096, 8192, 1024, 128, 16384, 1024, 512],bits=[8, 4, 8, 8, 2, 4, 8, 8, 8, 8, 8, 1, 1, 4, 2, 2, 1], start_hist=2, alpha=1.458, GH_bits=16, IP_bits=20, PATH_bits=12,  PATH_reg=16, hidden=12, num_heads=4, dropout=0.242, lr=0.000544",
+    # "n=17, sizes=[4096, 32768, 32768, 128, 2048, 8192, 8192, 32768, 32768, 2048, 512, 8192, 1024, 512, 512, 512, 512], bits=[8, 4, 8, 1, 4, 2, 1, 8, 4, 12, 12, 2, 1, 12, 12, 4, 1], start_hist=2, alpha=1.442, GH_bits=8, IP_bits=4, PATH_bits=24, PATH_reg=4, hidden=12, num_heads=4, dropout=0.236, lr=0.001095",
+    # # "n=14, sizes=[8192, 16384, 16384, 16384, 16384, 256, 8192, 32768, 512, 16384, 16384, 512, 8192, 4096], bits=[4, 8, 2, 8, 2, 4, 8, 8, 12, 2, 8, 8, 4, 12], start_hist=3, alpha=1.498, GH_bits=12, IP_bits=24, PATH_bits=20, PATH_reg=64, hidden=12, num_heads=4, dropout=0.027, lr=0.001724"
+    # "n=19, sizes=[8192, 512, 128, 2048, 32768, 4096, 256, 8192, 8192, 32768, 16384, 32768, 32768, 8192, 256, 32768, 16384, 4096, 128], bits=[1, 12, 1, 6, 7, 10, 6, 3, 8, 1, 2, 2, 1, 8, 10, 3, 7, 8, 11], start_hist=2, alpha=1.294, GH_bits=8, IP_bits=24, PATH_bits=20, PATH_reg=16, hidden=15, heads=5, dropout=0.135, lr=0.001387",
+    # "n=18, sizes=[512, 16384, 512, 16384, 4096, 32768, 32768, 128, 32768, 128, 16384, 4096, 1024, 16384, 2048, 512, 256, 4096], bits=[8, 6, 9, 11, 4, 5, 2, 10, 2, 6, 7, 3, 1, 10, 1, 12, 8, 3], start_hist=3, alpha=1.405, GH_bits=24, IP_bits=16, PATH_bits=24, PATH_reg=8, hidden=14, heads=7, dropout=0.086, lr=0.000895",
+    # "n=18, sizes=[2048, 16384, 8192, 8192, 16384, 16384, 32768, 16384, 1024, 8192, 32768, 8192, 4096, 4096, 512, 1024, 256, 32768], bits=[12, 8, 8, 8, 2, 4, 1, 8, 4, 2, 8, 1, 2, 12, 12, 1, 2, 1], start_hist=5, alpha=1.266, GH_bits=24, IP_bits=20, PATH_bits=16, PATH_reg=64, hidden=12, dropout=0.181, lr=0.000989",
+    # "n=18, sizes=[8192, 16384, 8192, 8192, 16384, 16384, 128, 16384, 512, 16384, 32768, 8192, 512, 4096, 4096, 256, 8192, 2048], bits=[4, 8, 8, 8, 1, 4, 8, 8, 8, 2, 8, 2, 4, 12, 8, 2, 2, 8], start_hist=3, alpha=1.331, GH_bits=24, IP_bits=12, PATH_bits=24, PATH_reg=64, hidden=12, dropout=0.145, lr=0.001277"
+
 ]
 
 
@@ -70,15 +75,15 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 STATE_DIR.mkdir(parents=True, exist_ok=True)
 
 
-SCALES_MIN, SCALES_MAX = 6, 20
-BIT_BUDGET = 1024 * 64
+SCALES_MIN, SCALES_MAX = 6, 30
+BIT_BUDGET = 1024 * 1024
 
 SIZE_OPTS = [128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
-BITS_OPTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-GH_TOKEN_BITS_OPTS = [2, 4, 8, 12, 16, 20, 24]
-IP_LSB_BITS_OPTS   = [2, 4, 8, 12, 16, 20, 24]
-PATH_BITS_OPTS     = [2, 4, 8, 12, 16, 20, 24]
-PATH_REG_OPTS      = [4, 8, 16, 32, 64, 128]
+BITS_OPTS = [1, 2, 4, 8, 16, 24, 32]
+GH_TOKEN_BITS_OPTS = [2, 4, 8, 12, 16, 20, 24 ,32, 48, 64]
+IP_LSB_BITS_OPTS   = [2, 4, 8, 12, 16, 20, 24 ,32, 48, 64]
+PATH_BITS_OPTS     = [2, 4, 8, 12, 16, 20, 24 ,32, 48, 64]
+PATH_REG_OPTS      = [4, 8, 16, 32, 64, 128, 256, 512]
 HIDDEN_OPTS   = [
     (6, 2), (6, 3),
     (8, 2), (8, 4),
@@ -89,41 +94,88 @@ HIDDEN_OPTS   = [
     (15, 3), (15, 5),
     (16, 2), (16, 4), (16, 8),
     (18, 2), (18, 3), (18, 6), (18, 9),
-    (20, 2), (20, 4), (20,5), (20, 10)
+    (20, 2), (20, 4), (20,5), (20, 10),
+    (36,2) , (36,6)
 ]
 
 # New GA ranges for dropout and learning rate:
 DROPOUT_RATE_RANGE = (0.0, 0.3)
 LEARNING_RATE_RANGE = (0.00025, 0.002)
 
-WARMUP_MIN, WARMUP_MAX = 250_000, 250_000
+WARMUP_MIN, WARMUP_MAX = 50_000, 50_000
 SIM_MIN,    SIM_MAX    = 250_000, 250_000
 INIT_POP_SIZE = 64
-POP_SIZE, GENERATIONS, TOUR_K = 16, 48, 4
-INIT_MUT_RATE, MIN_MUT_RATE = 0.2, 0.2
+POP_SIZE, GENERATIONS, TOUR_K = 32, 128, 8
+INIT_MUT_RATE, MIN_MUT_RATE = 0.2, 0.01
 BIT_PENALTY = 0.0001
 DIVERSITY_PENALTY = 0.35
 ELITE_COUNT = 1
 START_HISTORY_MIN, START_HISTORY_MAX = 2, 7
 ALPHA_MIN, ALPHA_MAX = 1.2, 1.8
 
-# ---------------- Attention Memory Calculation ----------------
-def calculate_attention_memory(total_input_bits, num_tokens, hidden_size, num_heads, bits_per_float=32):
-    T, H, nh = num_tokens, hidden_size, num_heads
-    proj_bits = T * H * bits_per_float
-    interm_elems = (9 * T * H) + (2 * T * nh) + ((H * H) // nh) + H
-    interm_bits = interm_elems * bits_per_float
-    total_bits = proj_bits + interm_bits
-    return {
-        "raw_input_bits": total_input_bits,
-        "projected_memory_bits": proj_bits,
-        "projected_memory_bytes": proj_bits // 8,
-        "intermediate_memory_bits": interm_bits,
-        "intermediate_memory_bytes": interm_bits // 8,
-        "total_memory_bits": total_bits,
-        "total_memory_bytes": total_bits // 8,
-    }
+def calculate_attention_memory(
+    token_bit_sizes,     # e.g. [64,20,16,...]
+    hidden_size,         # H
+    num_heads,           # nh
+    bits_per_float=32
+):
+    """
+    Returns a breakdown of:
+      - raw input bits
+      - embedding matrix bits (weights + biases)
+      - attention parameter bits (W_q, W_k, W_v, W_o)
+      - projection activation bits (Q/K/V/output)
+      - intermediate activation bits (scores, etc.)
+      - grand total bits & bytes
+    """
+    T   = len(token_bit_sizes)
+    H   = hidden_size
+    nh  = num_heads
+    bpf = bits_per_float
 
+    # 1) Raw-input buffer
+    raw_input_bits = sum(token_bit_sizes)
+
+    # 2) Embedding matrices (per-token Linear: (bits_i+1)->H + bias)
+    embed_weight_elems = sum((b + 1) * H for b in token_bit_sizes)
+    embed_bias_elems   = T * H
+    embed_bits = (embed_weight_elems + embed_bias_elems) * bpf
+
+    # 3) Attention parameters (4 mats of H×H)
+    param_bits = 4 * H * H * bpf
+
+    # 4) Projection activations: each of T tokens → H floats
+    proj_bits = T * H * bpf
+
+    # 5) Intermediate activations (φ, KV, scores, out, etc.)
+    interm_elems = (9 * T * H) \
+                 + (2 * T * nh) \
+                 + ((H * H) // nh) \
+                 + H
+    interm_bits = interm_elems * bpf
+
+    # 6) Total
+    total_bits  = (raw_input_bits
+                 + embed_bits
+                 + param_bits
+                 + proj_bits
+                 + interm_bits)
+    total_bytes = total_bits // 8
+
+    return {
+        "raw_input_bits":             raw_input_bits,
+        "raw_input_bytes":            raw_input_bits // 8,
+        "embedding_bits":             embed_bits,
+        "embedding_bytes":            embed_bits // 8,
+        "attention_param_bits":       param_bits,
+        "attention_param_bytes":      param_bits // 8,
+        "projection_activation_bits": proj_bits,
+        "projection_activation_bytes":proj_bits // 8,
+        "intermediate_activation_bits": interm_bits,
+        "intermediate_activation_bytes":interm_bits // 8,
+        "total_memory_bits":          total_bits,
+        "total_memory_bytes":         total_bytes,
+    }
 # ---------------- Helper Functions ----------------
 def save_state(state):
     with open(STATE_FILE, "w") as f:
@@ -201,9 +253,9 @@ def predictor_raw_bits(n_scales, sizes, bits, gh, ip, ph, pr):
 def is_valid(n_scales, sizes, bits, sh, a, gh, ip, ph, pr, hs, dr, lr):
     raw = predictor_raw_bits(n_scales, sizes, bits, gh, ip, ph, pr)
     tokens = n_scales + 3
-    attn = calculate_attention_memory(raw, tokens, hs[0], hs[1])
+    attn = calculate_attention_memory(bits,hs[0], hs[1])
     used = raw + attn["total_memory_bits"]
-    return BIT_BUDGET*0.9 <= used <= BIT_BUDGET
+    return BIT_BUDGET*0.8 <= used <= BIT_BUDGET
 
 def random_individual():
     while True:
@@ -334,7 +386,7 @@ def evaluate(ind, curr_gen, idx):
 
     # 6) Print memory footprint
     raw_bits    = predictor_raw_bits(n, s, b, gh, ip, ph, pr)
-    attn        = calculate_attention_memory(raw_bits, n+3, hs[0], hs[1])
+    attn        = calculate_attention_memory(b,hs[0], hs[1])
     total_bits  = raw_bits + attn["total_memory_bits"]
     total_bytes = total_bits // 8
     print(f"[evaluate] Memory: raw={raw_bits} bits, "
@@ -541,11 +593,10 @@ if __name__ == "__main__":
             population.append(random_individual())
         gen, acc_log, tot_time, ev_count = 0, [], 0.0, 0
 
-    # Initialize annealing variables
-    last_reset_gen = gen
-    global_best_fit = 0.0
-    reset_period = 40
-
+    # Add persistent elite pool (each entry is a (score, individual) tuple)
+    persistent_elites = []
+    global_best_fit = 0
+    reset_period = 20
     for curr_gen in range(gen, GENERATIONS):
         # determine population size for this generation
         if curr_gen == 0:
@@ -559,7 +610,7 @@ if __name__ == "__main__":
         mut_rate = MIN_MUT_RATE + (INIT_MUT_RATE - MIN_MUT_RATE) * (1 - curr_gen / GENERATIONS)
 
         # 1) Evaluate
-        results = [evaluate(ind, curr_gen, idx)for idx, ind in enumerate(population[:curr_pop_size])]
+        results = [evaluate(ind, curr_gen, idx) for idx, ind in enumerate(population[:curr_pop_size])]
         fits = [res[0] for res in results]
         population = [tuple(res[1:13]) for res in results]
         eval_times = [res[-1] for res in results]
@@ -612,17 +663,18 @@ if __name__ == "__main__":
         anneal_temp = max(0.1, 1 - (curr_gen - last_reset_gen) / reset_period)
         print(f"[annealing] anneal_temp = {anneal_temp:.3f}")
 
-        # 5) Selection & reserve for immigrants
-        num_imm = max(1, int(0.1 * curr_pop_size))
-        survivors = curr_pop_size - num_imm
-        n_elites = min(ELITE_COUNT, survivors)
-        elites = [ind for _, ind in sorted_pop[:n_elites]]
-        # Mutate the elite individuals lightly before adding them
-        mutated_elites = [mutate(elite, anneal_temp, mut_rate * 0.5) for elite in elites]
-        print(f"[selection] elites kept (after mutation): {mutated_elites}")
-        next_pop = mutated_elites.copy()
+        # 5) Persistent Elite Selection: update the elite pool and copy elites to the next population.
+        if curr_gen == gen:
+            persistent_elites = sorted_pop[:ELITE_COUNT]
+        else:
+            # Merge current-generation elites with the persistent elites and keep the best
+            persistent_elites = sorted(persistent_elites + sorted_pop[:ELITE_COUNT], key=lambda x: x[0], reverse=True)[:ELITE_COUNT]
+        elites = [ind for score, ind in persistent_elites]
+        print(f"[selection] persistent elites kept: {elites}")
+        next_pop = elites.copy()
 
         # 6) Immigration
+        num_imm = max(1, int(0.1 * curr_pop_size))
         print(f"[immigration] adding {num_imm} new random individuals")
         for _ in range(num_imm):
             next_pop.append(random_individual())
@@ -645,7 +697,6 @@ if __name__ == "__main__":
         print(f"[main] Truncating population from {len(next_pop)} down to {curr_pop_size}")
         population = next_pop[:curr_pop_size]
         print(f"[main] Population ready for next gen: size = {len(population)}")
-
 
         # 9) Save GA state
         state = {

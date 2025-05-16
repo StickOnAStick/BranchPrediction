@@ -1,18 +1,15 @@
-from test_parser import create_csv
-from test_parser import display_graph, display_speed_graph
+from test_parser import create_csv, display_graph, display_speed_graph
 from recompiler import compile_all, compile_champsim_instance
 from loguru import logger
 from argparse import Namespace
 from size_test import merge_json
-from Weights_Heatmap import show_heatmap
+# from Weights_Heatmap import show_heatmap
 
 import subprocess
 import os
-import time
 import sys
 import threading
 # import psutil
-import json
 import pathlib
 import argparse
 

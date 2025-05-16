@@ -57,7 +57,6 @@ def main():
     # Parse and deal with input argv's
     args: Namespace = parse_args()
     config_setup(args=args)
-    print("yeet")
     if recompile:
         logger.info(f"Recompiling the following predictors: {recompile_list}")
         size = -1
